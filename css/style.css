@@ -1,0 +1,97 @@
+body {
+    font-family: sans-serif;
+}
+
+/* Make content area fill the entire browser window */
+html,
+.fullscreen {
+    display: flex;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+/* Center the content in the browser window */
+.container {
+    margin: 0;
+    /* text-align: center; */
+}
+
+.title {
+    font-size: 3rem;
+}
+
+canvas {
+    /* border: 2px solid rgba(0, 0, 0, 0.199); */
+    display: block;
+    overflow: auto;
+}
+
+#scroll-editor-diagram {
+    display: block;
+    overflow: auto;
+}
+
+#scoreEditorScroll {
+  /* border: 2px solid rgba(255, 0, 157, 0.795); */
+  display: block;
+  overflow: auto;
+  /* height: 10px; */
+  /* width: 100px; */
+}
+
+#scroll-editor-diagramList {
+    display: block;
+    overflow: auto;
+
+    position: relative;
+    left: 0px;
+    top: 0px;
+}
+
+#scroll-editor-diagramList {
+  display: block;
+  overflow: auto;
+width: 100%;
+  position: relative;
+  left: 0px;
+  top: 0px;
+}
+
+#edit-diagramList {
+  position: absolute;
+  left: 100%;
+  top: 0px;
+}
+
+#delete-diagramList {
+  position: absolute;
+  left: 100%;
+  top: 0px;
+}
+
+dialog:not([open]) {
+  display: none;
+}
+
+/* Styling der geöffneten Popup-Box */
+dialog[open] { 
+  /* width: 20em;  */
+  /* background: #fffbf0;  */
+  /* border: thin solid #ffdec8; */
+  /* margin: 0; */
+  border: none;
+  border-radius: 1rem;
+  padding: 20;
+}
+dialog::backdrop {
+  background-color: hsla(0, 0%, 0%, 0.493);
+}
+
+#debug-div {
+  background-color: aquamarine;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}

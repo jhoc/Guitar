@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Guitar</title>
+
+
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="images/hello-icon-152.png">
+    <meta name="theme-color" content="white" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Guitar">
+    <meta name="msapplication-TileImage" content="images/hello-icon-144.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+
+</head>
+
+<body class="fullscreen">
+    <script src="built/debug.js"></script>
+    <script src="built/main.js"></script>
+    <script src="built/menuHeader.js"></script>
+    <script src="built/Diagram.js" type="module"></script>
+    <script src="built/DiagramSelector.js" type="module"></script>
+    <script src="built/diagramOptionsSelector.js" type="module"></script>
+    <script src="built/logicDiagramEditor.js" type="module"></script>
+    <script src="built/diagramList.js" type="module"></script>
+    <script src="built/logicDiagramList.js" type="module"></script>
+
+   
+
+
+    <div class="container">
+        <jui-menuheader id="menuheader">menuHeader</jui-menuheader>
+
+        <div>
+            <div id="scroll-editor-diagramList">
+                <button id="edit-diagramList", z-index="1">edit</button>
+                <button id="delete-diagramList", z-index="1">delete</button>
+                <canvas id="diagramList", z-index="-1">
+                    Guitar Diagram List
+                </canvas>
+            </div>
+
+            <dialog id="dialog">
+                <div>                    
+                    <jui-diagramselector id="editor-diagramSelector", text-align="left"></jui-diagramselector>
+                    <jui-diagramoptionsselector id="editor-diagramOptionsSelector"></jui-diagramoptionsselector>
+                    <p></p>
+                    <div id="scroll-editor-diagram">
+                        <canvas id="editor-diagram">
+                            Guitar Diagram Canvas
+                        </canvas>
+                    </div>
+                </div>
+                <p></p>
+                <button id="dialogCloseButton">Close</button>
+            </dialog>
+
+        </div>
+
+    </div>
+
+
+<!-- <div id="debug-div"></div> -->
+
+</body>
+
+</html>

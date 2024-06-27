@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score</title>
+</head>
+
+<body class="fullscreen">
+    <script src="built/menuHeader.js"></script>
+    <script src="built/score.js" type="module"></script>
+    <script src="built/logicScore.js" type="module"></script>
+    <script src="built/genericMenuBar.js" type="module"></script>
+    <script src="built/Diagram.js" type="module"></script>
+    <script src="built/logicScoreEditor.js" type="module"></script>
+    <script src="built/DiagramSelector.js" type="module"></script>
+    <script src="built/diagramOptionsSelector.js" type="module"></script>
+    <script src="built/logicDiagramEditor.js" type="module"></script>
+    <script src="built/Data_Score.js" type="module"></script>
+
+    <div class="container">
+
+        <jui-menuheader id="menuheader">menuHeader</jui-menuheader>
+
+        <canvas id="scoreCanvas" , z-index="-1">
+            Score Canvas
+        </canvas>
+
+        <div id="scoreEditor">
+            <jui-genericmenubar id="scoreEditorMenuBar">menubar</jui-genericmenubar>
+            <div id="scoreEditorScroll">
+                <canvas id="scoreEditorCanvas" , z-index="-1">Score Editor Canvas</canvas>
+            </div>
+        </div>
+        <p></p>
+        <div>
+            <jui-diagramselector id="editor-diagramSelector" , text-align="left">Dia Del</jui-diagramselector>
+
+            <jui-diagramoptionsselector id="editor-diagramOptionsSelector">Dia Opt Sel</jui-diagramoptionsselector>
+            <p></p>
+            <div id="scroll-editor-diagram">
+                <canvas id="editor-diagram">
+                    Guitar Diagram Canvas
+                </canvas>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>
