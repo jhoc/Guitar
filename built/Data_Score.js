@@ -1,4 +1,3 @@
-import { Pitch } from "./MusicDefinitions.js";
 import { jTK_Fraction } from "./jUITK_Math_Fraction.js";
 export class ScorePos {
     constructor() {
@@ -14,8 +13,6 @@ export const Staff_Type = Object.freeze({
 });
 export class Data_Note {
     constructor() {
-        this.m_duration = jTK_Fraction;
-        this.m_pitch = Pitch;
     }
     setTime(_time) {
         this.m_barAndTime = _time;
@@ -89,6 +86,7 @@ export class Data_Score {
         }
         return 1;
     }
+    // setCallbackChangeAddNote(_func) {
     setCallbackChangeAddNote(_func) {
         this.onDataChangeAddNote = _func;
     }

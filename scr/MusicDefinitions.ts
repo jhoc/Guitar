@@ -156,7 +156,7 @@ export {
 };
 
 
-class IntervallArray {
+export class IntervallArray {
     m_index: number;
     m_name: string;
     m_intervall;
@@ -187,7 +187,7 @@ class IntervallArray {
     }
 }
 
-class ChordFingering {
+export class ChordFingering {
     m_index: number;
     m_name: string;
     m_fingering;

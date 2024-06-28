@@ -115,7 +115,7 @@ class MusicDefinition {
 }
 const musicDefinition = new MusicDefinition();
 export { musicDefinition };
-class IntervallArray {
+export class IntervallArray {
     constructor(_name, _array) {
         this.m_index = -1;
         this.m_name = _name;
@@ -138,7 +138,7 @@ class IntervallArray {
         return this.m_intervall[i];
     }
 }
-class ChordFingering {
+export class ChordFingering {
     constructor(_name, _array) {
         this.m_index = -1;
         this.m_name = _name;

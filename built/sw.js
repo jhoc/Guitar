@@ -3,15 +3,15 @@ var filesToCache = [
     '/',
     '/index.html',
     '/css/style.css',
-    '/scr/main.js',
-    '/scr/Diagram.js',
-    '/scr/diagramList.js',
-    '/scr/diagramOptionsSelector.js',
-    '/scr/DiagramSelector.js',
-    '/scr/helper.js',
-    '/scr/logicDiagramEditor.js',
-    '/scr/logicDiagramList.js',
-    '/scr/MusicDefinitions.js'
+    '/built/main.js',
+    '/built/Diagram.js',
+    '/built/diagramList.js',
+    '/built/diagramOptionsSelector.js',
+    '/built/DiagramSelector.js',
+    '/built/helper.js',
+    '/built/logicDiagramEditor.js',
+    '/built/logicDiagramList.js',
+    '/built/MusicDefinitions.js'
 ];
 /* Start the service worker and cache all of the app's content */
 self.addEventListener('install', function (e) {

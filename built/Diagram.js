@@ -1,11 +1,17 @@
 import { musicDefinition } from "./MusicDefinitions.js";
 import { musicData } from "./MusicDefinitions.js";
 import { arraysEqual } from "./helper.js";
+var MouseClickBehaviour;
+(function (MouseClickBehaviour) {
+    MouseClickBehaviour[MouseClickBehaviour["CUSTOM"] = 0] = "CUSTOM";
+    MouseClickBehaviour[MouseClickBehaviour["SETCHORDFINGERING"] = 1] = "SETCHORDFINGERING";
+})(MouseClickBehaviour || (MouseClickBehaviour = {}));
+;
 export class Diagram {
     constructor(_canvas, _instrument) {
         this.chordFingeringString = 4;
         this.chordFingeringFret = 0;
-        this.mouseClickBehaviour = 'CUSTOM'; //'SETCHORDFINGERING
+        this.mouseClickBehaviour = MouseClickBehaviour.CUSTOM; //'SETCHORDFINGERING
         this.xPos = 0;
         this.yPos = 0;
         this.fretDelta = 50; // * window.devicePixelRatio;
@@ -15,6 +21,7 @@ export class Diagram {
         this.fingerColorRoot = '#FF5555';
         this.fingerColorChord = '#BB99DD';
         this.fingerColorScale = '#99DDDD';
+        // customCoordinates: Coord[] = [];
         this.customCoordinates = [];
         this.chordFingeringCoordinates = []; //[[1,2], [3,4]]; //[];
         if (_canvas != null) {
@@ -31,7 +38,7 @@ export class Diagram {
         this.chordFingering;
         this.chordFingeringString = 4;
         this.chordFingeringFret = 0;
-        this.mouseClickBehaviour = 'CUSTOM'; //'SETCHORDFINGERING'
+        this.mouseClickBehaviour = MouseClickBehaviour.CUSTOM; //'SETCHORDFINGERING'
         this.xPos = 0;
         this.yPos = 0;
         this.fretDelta = 50; // * window.devicePixelRatio;
@@ -87,7 +94,7 @@ export class Diagram {
         // console.log( "setChord ", _chord );
         if (_chord == undefined) {
             this.chordFingeringCoordinates = [];
-            this.mouseClickBehaviour = 'CUSTOM';
+            this.mouseClickBehaviour = MouseClickBehaviour.CUSTOM;
         }
         else {
             this.computeChordFingeringCoordinates(this.chordFingeringFret, this.chordFingeringString);
@@ -112,7 +119,7 @@ export class Diagram {
         // console.log( "dia.setChordFingering", _fing);
         if (_fing == undefined) {
             this.chordFingeringCoordinates = [];
-            this.mouseClickBehaviour = 'CUSTOM';
+            this.mouseClickBehaviour = MouseClickBehaviour.CUSTOM;
         }
         else {
             this.computeChordFingeringCoordinates(this.chordFingeringFret, this.chordFingeringString);
@@ -258,7 +265,7 @@ export class Diagram {
         let coord = this.posToCoord(x, y);
         // console.log( x, y, this.yPos, coord );
         // this.mouseClickBehaviour = 'CUSTOM'; //'SETCHORDFINGERING'
-        if (this.mouseClickBehaviour == 'SETCHORDFINGERING') {
+        if (this.mouseClickBehaviour == MouseClickBehaviour.SETCHORDFINGERING) {
             this.chordFingeringString = coord[1];
             this.setChordFingeringFret(coord[0]);
             return;
@@ -495,7 +502,7 @@ export class Diagram {
     deserialize(_json) {
         var res = _json;
         for (const key in res) {
-            // console.log(key, res[key]);
+            console.log(key, res[key]);
             if (key == 'instrument') {
                 // console.log("fdshjflsdfhjk");
                 this.instrument = musicData.getInstrumentFromJson(res[key]);

@@ -2,44 +2,47 @@ import {
     musicDefinition
 } from "./MusicDefinitions.js";
 import {
-    musicData
+    musicData, Instrument, Pitch, IntervallArray, ChordFingering
 } from "./MusicDefinitions.js";
 import {
     arraysEqual
 } from "./helper.js"
 
+enum MouseClickBehaviour { CUSTOM, SETCHORDFINGERING };
+type Coord = { fret: number, saite: number };
 export class Diagram {
-    canvas;
-    ctx;
-    instrument;
-    root;
-    chord; // = musicData.scaleAt(0);
-    scale; // = musicData.scaleAt(0);
-    chordFingering;
-    chordFingeringString = 4;
-    chordFingeringFret = 0;
-    mouseClickBehaviour = 'CUSTOM'; //'SETCHORDFINGERING
-    xPos = 0;
-    yPos = 0;
-    fretDelta = 50; // * window.devicePixelRatio;
-    stringDelta = 32; // * window.devicePixelRatio;
-    fingerWidth = 12; // * window.devicePixelRatio
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+    instrument: Instrument;
+    root: Pitch;
+    chord: IntervallArray; // = musicData.scaleAt(0);
+    scale: IntervallArray; // = musicData.scaleAt(0);
+    chordFingering: ChordFingering;
+    chordFingeringString: number = 4;
+    chordFingeringFret: number = 0;
+    mouseClickBehaviour: MouseClickBehaviour = MouseClickBehaviour.CUSTOM; //'SETCHORDFINGERING
+    xPos: number = 0;
+    yPos: number = 0;
+    fretDelta: number = 50; // * window.devicePixelRatio;
+    stringDelta: number = 32; // * window.devicePixelRatio;
+    fingerWidth: number = 12; // * window.devicePixelRatio
     fingerColorCustom = '#AAFFDD';
     fingerColorRoot = '#FF5555';
     fingerColorChord = '#BB99DD';
     fingerColorScale = '#99DDDD';
+    // customCoordinates: Coord[] = [];
     customCoordinates = [];
     chordFingeringCoordinates = []; //[[1,2], [3,4]]; //[];
 
-    fretboardLeft;
-    fretboardRight;
-    fretboardTop;
-    fretboardBottom;
+    fretboardLeft: number;
+    fretboardRight: number;
+    fretboardTop: number;
+    fretboardBottom: number;
 
-m_width;
-m_height;
+m_width: number;
+m_height: number;
 
-chordFingeringStringFret;
+chordFingeringStringFret: number;
 
     callbackOnChange;
 
@@ -59,7 +62,7 @@ chordFingeringStringFret;
         this.chordFingering;
         this.chordFingeringString = 4;
         this.chordFingeringFret = 0;
-        this.mouseClickBehaviour = 'CUSTOM'; //'SETCHORDFINGERING'
+        this.mouseClickBehaviour = MouseClickBehaviour.CUSTOM; //'SETCHORDFINGERING'
 
         this.xPos = 0;
         this.yPos = 0;
@@ -77,7 +80,7 @@ chordFingeringStringFret;
         this.updateDimension();
     }
 
-    setMouseClickBehaviour(_behaviour) {
+    setMouseClickBehaviour(_behaviour: MouseClickBehaviour ) {
         // console.log( "dia",  _behaviour );
         this.mouseClickBehaviour = _behaviour;
     }
@@ -123,7 +126,7 @@ chordFingeringStringFret;
         // console.log( "setChord ", _chord );
         if (_chord == undefined) {
             this.chordFingeringCoordinates = [];
-            this.mouseClickBehaviour = 'CUSTOM';
+            this.mouseClickBehaviour = MouseClickBehaviour.CUSTOM;
         } else {
             this.computeChordFingeringCoordinates(this.chordFingeringFret, this.chordFingeringString);
         }
@@ -150,7 +153,7 @@ chordFingeringStringFret;
         // console.log( "dia.setChordFingering", _fing);
         if (_fing == undefined) {
             this.chordFingeringCoordinates = [];
-            this.mouseClickBehaviour = 'CUSTOM';
+            this.mouseClickBehaviour = MouseClickBehaviour.CUSTOM;
         } else {
             this.computeChordFingeringCoordinates(this.chordFingeringFret, this.chordFingeringString);
         }
@@ -317,7 +320,7 @@ createChordFingeringCoordinates() {
         // console.log( x, y, this.yPos, coord );
 
         // this.mouseClickBehaviour = 'CUSTOM'; //'SETCHORDFINGERING'
-        if (this.mouseClickBehaviour == 'SETCHORDFINGERING') {
+        if (this.mouseClickBehaviour == MouseClickBehaviour.SETCHORDFINGERING) {
             this.chordFingeringString = coord[1];
             this.setChordFingeringFret(coord[0]);
             return;
@@ -584,7 +587,7 @@ createChordFingeringCoordinates() {
 
         var res = _json;
         for (const key in res) {
-            // console.log(key, res[key]);
+            console.log(key, res[key]);
             if( key == 'instrument' ) {
                 // console.log("fdshjflsdfhjk");
                 this.instrument = musicData.getInstrumentFromJson( res[key] );
