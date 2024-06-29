@@ -11,7 +11,7 @@ export const Staff_Type = Object.freeze({
     TAB: 'tab',
     STAFF: 'staff',
 });
-export class Data_Note {
+export class Data_ScoreObject {
     constructor() {
     }
     setTime(_time) {
@@ -19,6 +19,11 @@ export class Data_Note {
     }
     getTime() {
         return this.m_barAndTime;
+    }
+}
+export class Data_Note extends Data_ScoreObject {
+    constructor() {
+        super();
     }
     setDuration(_dur) {
         this.m_duration = _dur;

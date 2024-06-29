@@ -1,33 +1,44 @@
 import {
+    Instrument
+} from "./MusicDefinitions.js"
+import {
     Diagram,
 } from "./Diagram.js";
 
-export class DiagramList {
-canvas;
-ctx;
-m_diagramList;
-highlightRow;
-instrument;
-gapBtwDia;
-gapBtwDiaMargin;
-scrollLeftAmount;
+interface callbackSelectDiagramType {
+    (_dia: Diagram): void
+}
+export interface LayoutProperties {
+    gapBtwDia: number;
+    gapBtwDiaMargin: number;
+}
 
-onSelectDiagramFunction;
+export class DiagramList {
+    canvas: HTMLCanvasElement;;
+    ctx: CanvasRenderingContext2D;
+    m_diagramList: Diagram[] = [];
+    highlightRow: number = 0;;
+    instrument: Instrument;
+    gapBtwDia: number = 0;
+    gapBtwDiaMargin: number = 0;
+    scrollLeftAmount: number = 0;;
+
+    onSelectDiagramFunction: callbackSelectDiagramType;
 
 
     constructor(_canvas, _instrument) {
         this.canvas = _canvas;
         this.ctx = _canvas.getContext('2d');
-        this.m_diagramList = [];
-        this.highlightRow = 0;
-this.instrument = _instrument; //tmp
+        // this.m_diagramList = [];
+        // this.highlightRow = 0;
+        this.instrument = _instrument; //tmp
         this.gapBtwDia = 34;
         this.gapBtwDiaMargin = 0.14 * this.gapBtwDia;
-        this.scrollLeftAmount = 0;
+        // this.scrollLeftAmount = 0;
 
         // this.addDiagram(_instrument);
-    //  this.m_diagramList[0].deserialize();
-        if ( !this.loadLocalStorage() ) {
+        //  this.m_diagramList[0].deserialize();
+        if (!this.loadLocalStorage()) {
             this.addDiagram(_instrument);
         }
         // this.addDiagram(_instrument);
@@ -36,8 +47,8 @@ this.instrument = _instrument; //tmp
         this.canvas.addEventListener('mousemove', this.mouseMove.bind(this), false);
     }
 
-    loadLocalStorage() {
-        var retrievedObject = localStorage.getItem('diagramList');
+    loadLocalStorage() : boolean {
+        var retrievedObject: string = localStorage.getItem('diagramList');
         retrievedObject = JSON.parse(retrievedObject);
         if (retrievedObject != null && retrievedObject.length != 0) {
             // this.m_diagramList = retrievedObject;
@@ -46,9 +57,9 @@ this.instrument = _instrument; //tmp
                 // this.m_diagramList.push(retrievedObject[i]);
                 // console.log('start retrieve diList: ', i, JSON.parse( retrievedObject[i] ) );  
                 // console.log('start retrieve diList: ', i, retrievedObject[i] );  
-                var dia = new Diagram( this.canvas, this.instrument );
-            //    console.log( dia.deserialize() );
-                dia.deserialize( retrievedObject[i] );
+                var dia = new Diagram(this.canvas, this.instrument);
+                //    console.log( dia.deserialize() );
+                dia.deserialize(retrievedObject[i]);
                 // dia.update();
                 this.m_diagramList.push(dia);
             }
@@ -59,38 +70,38 @@ this.instrument = _instrument; //tmp
         return false;
     }
 
-    setScrollLeftAmount(_x) {
+    setScrollLeftAmount( _x: number ) : void {
         this.scrollLeftAmount = _x;
         this.update();
     }
 
-    minHeight() {
+    minHeight() : number {
         if (this.m_diagramList.length == 0) return 0;
         return this.m_diagramList[0].getHeight();
     }
 
-    addDiagram(_instrument) {
+    addDiagram( _instrument: Instrument ) : void {
         // console.log( "DiagramList.add" );
-        var diagram = new Diagram(this.canvas, _instrument);
+        var diagram: Diagram = new Diagram(this.canvas, _instrument);
 
         this.m_diagramList.push(diagram);
         localStorage.setItem('diagramList', JSON.stringify(this.m_diagramList));
         // localStorage.setItem( 'diagramListCount', JSON.stringify( this.m_diagramList.length ) );
         // console.log( "getData addDia",JSON.stringify( this.m_diagramList.length ), localStorage.getItem( 'diagramListCount') );
         this.calculateDimension();
-
         this.update();
     }
-    removeDiagram(_i) {
+    removeDiagram( _i: number ) : void {
         if (this.m_diagramList.length < 2) return;
         this.m_diagramList.splice(_i, 1);
+        localStorage.setItem('diagramList', JSON.stringify(this.m_diagramList));
         this.calculateDimension();
         this.update();
     }
 
-    calculateDimension() {
-        var h = 0;
-        for (let i = 0; i < this.m_diagramList.length; i++) {
+    calculateDimension() : void {
+        var h: number = 0;
+        for (let i: number = 0; i < this.m_diagramList.length; i++) {
             h += this.gapBtwDia;
             this.m_diagramList[i].setYPos(h);
             h += this.m_diagramList[i].getHeight()
@@ -99,21 +110,21 @@ this.instrument = _instrument; //tmp
         this.canvas.setAttribute("height", h + "px");
     }
 
-    update() {
+    update() : void {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.font = '16px Arial';
         this.ctx.fillStyle = "#000000";
-        for (let i = 0; i < this.m_diagramList.length; i++) {
+        for (let i: number = 0; i < this.m_diagramList.length; i++) {
             if (this.highlightRow == i) {
                 this.ctx.fillStyle = "#CCEEFF";
-                let marg = this.gapBtwDiaMargin;
+                let marg: number = this.gapBtwDiaMargin;
                 this.ctx.fillRect(this.m_diagramList[i].getXPos() + marg, this.m_diagramList[i].getYPos() - this.gapBtwDia + marg, this.m_diagramList[i].getWidth() - (marg * 2), this.gapBtwDia - (marg * 2));
                 this.ctx.fillStyle = "#000000";
             }
             this.m_diagramList[i].update();
 
             // if (this.highlightRow != i) {
-            let name = this.m_diagramList[i].getName()
+            let name: string = this.m_diagramList[i].getName()
             let charH = this.ctx.measureText(name).actualBoundingBoxAscent + this.ctx.measureText(name).actualBoundingBoxDescent;
             // this.ctx.fillText(name, this.m_diagramList[i].getXPos() + 10, this.m_diagramList[i].getYPos() - (charH / 2));
             this.ctx.fillText(name, this.scrollLeftAmount + this.m_diagramList[i].getXPos() + 10, this.m_diagramList[i].getYPos() - (this.gapBtwDia / 2) + (charH / 2));
@@ -123,11 +134,11 @@ this.instrument = _instrument; //tmp
 
     }
 
-    mouseDown(_evt) {
-        var rect = this.canvas.getBoundingClientRect();
-        let x = _evt.clientX - rect.left;
-        let y = _evt.clientY - rect.top;
-        for (let i = 0; i < this.m_diagramList.length; i++) {
+    mouseDown( _evt: MouseEvent ) : void {
+        var rect: DOMRect = this.canvas.getBoundingClientRect();
+        let x: number = _evt.clientX - rect.left;
+        let y: number = _evt.clientY - rect.top;
+        for (let i: number = 0; i < this.m_diagramList.length; i++) {
             if (y > this.m_diagramList[i].getYPos() - this.gapBtwDia && y < this.m_diagramList[i].getYPos()) {
                 // console.log( "DiaList.click on ", i );   
                 this.highlightRow = i;
@@ -138,11 +149,11 @@ this.instrument = _instrument; //tmp
         this.update();
     }
 
-    mouseMove(_evt) {
-        var rect = this.canvas.getBoundingClientRect();
-        let x = _evt.clientX - rect.left;
-        let y = _evt.clientY - rect.top;
-        for (let i = 0; i < this.m_diagramList.length; i++) {
+    mouseMove(_evt: MouseEvent) : void {
+        var rect: DOMRect = this.canvas.getBoundingClientRect();
+        // let x: number = _evt.clientX - rect.left;
+        let y: number = _evt.clientY - rect.top;
+        for (let i: number = 0; i < this.m_diagramList.length; i++) {
             if (y > this.m_diagramList[i].getYPos() - this.gapBtwDia && y < this.m_diagramList[i].getYPos() + this.m_diagramList[i].getHeight()) {
                 // console.log( "DiaList.click on ", i );   
                 if (i != this.highlightRow) {
@@ -156,33 +167,35 @@ this.instrument = _instrument; //tmp
         // this.update();
     }
 
-    getLayoutProperties() {
-        return [this.gapBtwDia, this.gapBtwDiaMargin];
+    getLayoutProperties() : LayoutProperties{
+        return { gapBtwDia: this.gapBtwDia, gapBtwDiaMargin: this.gapBtwDiaMargin };
+        // return [this.gapBtwDia, this.gapBtwDiaMargin];
     }
 
-    setCallbackOnSelectDiagram(_function) {
+    setCallbackOnSelectDiagram(_function: callbackSelectDiagramType) {
         this.onSelectDiagramFunction = _function;
     }
 
-    setSelectedDiagram(_dia) {
+    setSelectedDiagram( _dia: Diagram ) : void {
         if (this.m_diagramList[this.highlightRow] == undefined) return;
         this.m_diagramList[this.highlightRow].setDiagram(_dia);
-        localStorage.setItem( 'diagramList', JSON.stringify( this.m_diagramList ) );
-        console.log( JSON.stringify( _dia.getChordFingering() ));
+        // localStorage.setItem( 'diagramList', JSON.stringify( this.m_diagramList ) );
+        console.log(JSON.stringify(_dia.getChordFingering()));
         this.m_diagramList[this.highlightRow].createChordFingeringCoordinates();
+        localStorage.setItem('diagramList', JSON.stringify(this.m_diagramList));
         this.update();
     }
 
-    getSelectedDiagram() {
+    getSelectedDiagram() : Diagram {
         if (this.m_diagramList[this.highlightRow] == undefined) return undefined;
         return this.m_diagramList[this.highlightRow];
     }
-    getSelectedDiagramPos() {
+    getSelectedDiagramPos() : number {
         if (this.m_diagramList[this.highlightRow] == undefined) return undefined;
         return this.m_diagramList[this.highlightRow].getYPos() - this.gapBtwDia;
     }
 
-    getSelectedDiagramIndex() {
+    getSelectedDiagramIndex() : number {
         return this.highlightRow;
     }
 }

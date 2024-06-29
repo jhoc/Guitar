@@ -1,3 +1,8 @@
+export function isEqualFretboardCoord(_a, _b) {
+    if (_a.fret == _b.fret && _a.saite == _b.saite)
+        return true;
+    return false;
+}
 class Pitch {
     constructor(_name, _pitch, _octave, _index) {
         this.m_name = "";
@@ -44,7 +49,7 @@ class Instrument {
     }
     pitchFromCoord(_coord) {
         // console.log( "PitchFromCoord", _coord, this.m_pitch[_coord[1]].index() + _coord[0], musicDefinition.pitch( this.m_pitch[_coord[1]].index() + _coord[0] ) );
-        return musicDefinition.pitch(this.m_pitch[_coord[1]].index() + _coord[0]);
+        return musicDefinition.pitch(this.m_pitch[_coord.saite].index() + _coord.fret);
     }
 }
 export { Instrument };
@@ -64,6 +69,8 @@ class MusicDefinition {
     constructor() {
         this.m_pitch = [];
         this.m_intervall = [];
+        // this.m_pitch = [];
+        // this.m_intervall = [];
         this.initPitches = this.initPitches.bind(this); // Binden Sie 'this' an die Methode
         this.initIntervalls = this.initIntervalls.bind(this);
         this.initPitches();
@@ -74,6 +81,7 @@ class MusicDefinition {
         let m_pitchNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
         for (let i = 0; i < 120; i++) {
             this.m_pitch.push(new Pitch(m_pitchNames[i % 12], i % 12, Math.floor(i / 12), i));
+            // _name: string, _pitch: number, _octave: number, _index: number 
         }
     }
     initIntervalls() {
@@ -162,20 +170,30 @@ export class ChordFingering {
 }
 class MusicData {
     constructor() {
+        this.chordIndex = 0;
         this.m_instrument = [];
         this.m_chord = [];
-        this.chordIndex = 0;
         this.m_scale = [];
         this.scaleIndex = 0;
         this.m_pitch = [];
-        for (let i = 0; i < 12; i++) {
-            this.m_pitch.push(musicDefinition.pitch(i));
-        }
-        this.m_rootArray;
-        this.m_rootArray = new IntervallArray("Root", [musicDefinition.intervall(0)]);
         this.m_chordFingering = [];
         this.m_chordFingeringIndex = 0;
         this.m_scaleFingering = [];
+        this.m_scaleFingeringIndex = 0;
+        // this.m_instrument = [];
+        // this.m_chord = [];
+        // this.chordIndex = 0;
+        // this.m_scale = [];
+        // this.scaleIndex = 0;
+        // this.m_pitch = [];
+        for (let i = 0; i < 12; i++) {
+            this.m_pitch.push(musicDefinition.pitch(i));
+        }
+        // this.m_rootArray;
+        this.m_rootArray = new IntervallArray("Root", [musicDefinition.intervall(0)]);
+        // this.m_chordFingering = [];
+        // this.m_chordFingeringIndex = 0;
+        // this.m_scaleFingering = [];
     }
     rootArray() {
         return this.m_rootArray;
@@ -301,16 +319,16 @@ class MusicData {
     }
 }
 let musicData = new MusicData();
-let gitPitches = [];
-gitPitches.push(musicDefinition.pitchFromNameAndOctave('E', 5));
-gitPitches.push(musicDefinition.pitchFromNameAndOctave('B', 4));
-gitPitches.push(musicDefinition.pitchFromNameAndOctave('G', 4));
-gitPitches.push(musicDefinition.pitchFromNameAndOctave('D', 4));
-gitPitches.push(musicDefinition.pitchFromNameAndOctave('A', 3));
-gitPitches.push(musicDefinition.pitchFromNameAndOctave('E', 2));
-let guitarInstr = new Instrument("Guitar", gitPitches, 24);
+let gPitches = [];
+gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 5));
+gPitches.push(musicDefinition.pitchFromNameAndOctave('B', 4));
+gPitches.push(musicDefinition.pitchFromNameAndOctave('G', 4));
+gPitches.push(musicDefinition.pitchFromNameAndOctave('D', 4));
+gPitches.push(musicDefinition.pitchFromNameAndOctave('A', 3));
+gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 2));
+let guitarInstr = new Instrument("Guitar", gPitches, 24);
 musicData.addInstrument(guitarInstr);
-gitPitches = [];
+let gitPitches = [];
 gitPitches.push(musicDefinition.intervall(0));
 gitPitches.push(musicDefinition.intervall(2));
 gitPitches.push(musicDefinition.intervall(4));

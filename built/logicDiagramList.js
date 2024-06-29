@@ -50,7 +50,7 @@ function setPositionForSelected(_yPos) {
     //damit beziehen sich alle children mit dem style parameter(position: absolute;) auf den parent
     // deswegen reicht es die position des diagram auf dem canvas zu wissen
     let listProp = diagramList.getLayoutProperties();
-    let x = (listProp[1]) + scrollDiagramListCanvas.scrollLeft;
+    let x = (listProp.gapBtwDiaMargin) + scrollDiagramListCanvas.scrollLeft;
     let y = _yPos;
     y += editDiagramList.clientHeight / 2;
     diagramList.setScrollLeftAmount(scrollDiagramListCanvas.scrollLeft);

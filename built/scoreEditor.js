@@ -1,10 +1,13 @@
-import { dataScore, Staff_Type } from "./Data_Score.js";
+import { dataScore } from "./Data_Score.js";
 import { Diagram } from "./Diagram.js";
 import { jTK_Fraction } from "./jUITK_Math_Fraction.js";
-export const Edit_Area = Object.freeze({
-    STAFF: 'staff',
-    DIAGRAM: 'diagram',
-});
+import { MouseAction } from "./types.js";
+import { StaffType } from "./score.js";
+export var Edit_Area;
+(function (Edit_Area) {
+    Edit_Area[Edit_Area["STAFF"] = 0] = "STAFF";
+    Edit_Area[Edit_Area["DIAGRAM"] = 1] = "DIAGRAM";
+})(Edit_Area || (Edit_Area = {}));
 export const Score_Parameters = {
     noteSize: 10,
     marginHor: 20,
@@ -15,17 +18,22 @@ export const Score_Parameters = {
 };
 export class ScoreEditor {
     constructor(_canvas, _instrument) {
+        this.scoreObjects = [];
+        this.selectedObjects = [];
+        this.m_barRange = [];
+        this.height = 0;
+        this.width = 0;
         this.canvas = _canvas;
         this.ctx = _canvas.getContext('2d');
-        this.staffType = Staff_Type.SHORT;
+        this.staffType = StaffType.SHORT;
         this.editArea = Edit_Area.STAFF;
         this.m_data = dataScore;
         this.instrument = _instrument;
-        this.scoreObjects = [];
-        this.selectedObjects = [];
+        // this.scoreObjects = [];
+        // this.selectedObjects = [];
         this.m_barRange = [0, 3];
-        this.height = 0;
-        this.width = 0;
+        // this.height = 0;
+        // this.width = 0;
         this.updateDimension();
         this.m_mouseIsPressed = false;
         this.canvas.addEventListener('mousedown', this.mouseDown.bind(this), false);
@@ -44,7 +52,7 @@ export class ScoreEditor {
     mouseDblClick(_evt) {
         var pos = this.getScorePosFromMouse(_evt.clientX, _evt.clientY);
         let mousePos = this.mousePos(_evt);
-        this.onMouseInput(mousePos, "dblClick", pos, this.editArea);
+        this.onMouseInput(mousePos, MouseAction.DBLCLICK, pos, this.editArea);
     }
     mouseDown(_evt) {
         // let pos = this.getScorePosFromMouse( _evt.clientX, _evt.clientY );
@@ -59,14 +67,14 @@ export class ScoreEditor {
             this.editArea = Edit_Area.DIAGRAM;
         }
         for (let i = 0; i < this.scoreObjects.length; i++) {
-            if (this.scoreObjects[i].handleMouse(mousePos.x, mousePos.y)) {
+            if (this.scoreObjects[i].handleMouse(mousePos)) {
                 // console.log("scoreEditor obj.handleMouse");
                 this.scoreObjects[i].setSelect(true);
                 this.selectedObjects.push(this.scoreObjects[i]);
             }
         }
         var pos = this.getScorePosFromMouse(_evt.clientX, _evt.clientY);
-        this.onMouseInput(mousePos, "click", pos, this.editArea);
+        this.onMouseInput(mousePos, MouseAction.CLICK, pos, this.editArea);
         this.update();
     }
     mouseUp(_evt) {
@@ -78,7 +86,7 @@ export class ScoreEditor {
         if (this.m_mouseIsPressed) {
             let mousePos = this.mousePos(_evt);
             var pos = this.getScorePosFromMouse(_evt.clientX, _evt.clientY);
-            this.onMouseInput(mousePos, "drag", pos, this.editArea);
+            this.onMouseInput(mousePos, MouseAction.DRAG, pos, this.editArea);
         }
     }
     getScorePosFromMouse(_x, _y) {
@@ -178,7 +186,8 @@ export class ScoreEditor {
         // console.log( "scoreEdit.drawObj", this.scoreObjects.length)
         for (let i = 0; i < this.scoreObjects.length; i++) {
             // console.log( typeof( this.scoreObjects[i] ) );
-            this.scoreObjects[i].draw(_xOff, _yOff);
+            // this.scoreObjects[i].draw(_xOff, _yOff);
+            this.scoreObjects[i].draw();
         }
     }
     drawBars(_x, _y) {

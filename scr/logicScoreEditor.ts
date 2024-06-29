@@ -1,15 +1,44 @@
+import {
+    GenericMenuBar
+} from "./genericMenuBar.js"
+
+import {
+    musicData
+} from "./MusicDefinitions.js"
+import {
+    ScoreEditor,
+    Score_Parameters,
+    Edit_Area
+} from "./scoreEditor.js"
+import {
+    Data_Note,
+    dataScore,
+    ScorePos,
+} from "./Data_Score.js";
+import {
+    algo_lin_setXPos
+} from "./algorithm_score_linear.js"
+import {
+    ScoreObject,
+    ScoreObject_Note
+}from "./scoreObjects.js";
+
+import { MouseAction, ScreenPos } from "./types.js";
+
 ////////////////////////////////////////// Menubar
 //////////////////////////////////////vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+console.log( "Create ScoreEditor MenuBar............." );
 const menubar = document.getElementById('scoreEditorMenuBar') as GenericMenuBar || null;
 
-var nav = menubar.createButton('navigation', "./images/mi--chevron-down.svg");
+var nav: HTMLButtonElement = menubar.createButton('navigation', "./images/mi--chevron-down.svg");
 menubar.addHeaderLeftIcon(nav);
-nav.addEventListener('click', function () {
+nav.addEventListener('click', function () : void {
     menubar.clearMenu();
-    menubar.createMenuElement('124ffdsdfsdfd').addEventListener('click', function () {
+    menubar.createMenuElement('124ffdsdfsdfd').addEventListener('click', function () : void {
         console.log("124fdsdfsdf");
     });
-    menubar.createMenuElement('ssdfsdfsdf123123dsdf78sdf78sdf').addEventListener('click', function () {
+    menubar.createMenuElement('ssdfsdfsdf123123dsdf78sdf78sdf').addEventListener('click', function () : void {
         console.log("1sdsdf78123123123");
     });
     // menubar.addMenuElement( li );
@@ -17,10 +46,9 @@ nav.addEventListener('click', function () {
     menubar.openMenu(nav);
 })
 
-var element;
-element = menubar.createButton('navigation', "./images/mi--menu.svg");
+var element: HTMLButtonElement = menubar.createButton('navigation', "./images/mi--menu.svg");
 menubar.addHeaderRightIcon(element);
-element.addEventListener('click', function () {
+element.addEventListener('click', function () : void {
     menubar.clearMenu();
     menubar.createMenuElement('124fd').addEventListener('click', function () {
         console.log("124fd");
@@ -42,16 +70,9 @@ element.addEventListener('click', function () {
 
 ////////////////////////////////////////////////////// defines, creations, ....
 //////////////////////////////////////////////////////// ScoreEditor
-import {
-    musicData
-} from "./MusicDefinitions.js"
-import {
-    ScoreEditor,
-    Score_Parameters,
-    Edit_Area
-} from "./scoreEditor.js"
-const canvasScoreEditor = document.getElementById('scoreEditorCanvas');
-var scrollScoreEditor = document.getElementById('scoreEditorScroll');
+
+const canvasScoreEditor: HTMLCanvasElement = document.getElementById('scoreEditorCanvas') as HTMLCanvasElement;
+var scrollScoreEditor: HTMLDivElement = document.getElementById('scoreEditorScroll') as HTMLDivElement;
 const scoreEditor = new ScoreEditor(canvasScoreEditor, musicData.instrumentAt(0));
 scoreEditor.update();
 
@@ -60,10 +81,10 @@ scoreEditor.update();
 /////////////////////////////////////////////// Scroll vvvvvvvvvvvvvvvvvvvvv
 // console.log( scoreCanvas, score );
 
-function adaptSize() {
+function adaptSize() : void {
     // console.log( "logicScoreEditor:adaptSize" );
-    var windowW = document.body.clientWidth;
-    var canvasW = canvasScoreEditor.getBoundingClientRect().width;
+    var windowW: number = document.body.clientWidth;
+    var canvasW: number = canvasScoreEditor.getBoundingClientRect().width;
     // console.log( "logic dia editor.resize", windowW, canvasW );
 
     if (windowW > canvasW) {
@@ -71,57 +92,50 @@ function adaptSize() {
     } else {
         scrollScoreEditor.style.width = windowW + 'px';
     }
-    const scrollbarWidthVer = scrollScoreEditor.offsetHeight - scrollScoreEditor.clientHeight;
+    const scrollbarWidthVer: number = scrollScoreEditor.offsetHeight - scrollScoreEditor.clientHeight;
     scrollScoreEditor.style.height = canvasScoreEditor.clientHeight + scrollbarWidthVer + 'px';
 }
 
-window.addEventListener('load', function () {
+window.addEventListener('load', function () : void {
     // console.log('logicScoreEditor:load')
     adaptSize();
     // adaptSize(); // 2 mal wg scrollbar, beim ersten mal noch nicht gesetzt
 })
-window.addEventListener('resize', function (event) {
+window.addEventListener('resize', function (event) : void {
     adaptSize();
 }, true);
 
 
 ///////////////////////////////////////////////////////////
 ////////////////////////////vvvvvvvvvvvvv Data Logic
-import {
-    dataScore,
-} from "./Data_Score.js";
-import {
-    algo_lin_setXPos
-} from "./algorithm_score_linear.js"
-import {
-    ScoreObject_Note
-}from "./scoreObjects.js";
-function updateScoreObjectPos() {
+
+
+function updateScoreObjectPos() : void {
     algo_lin_setXPos(scoreEditor.getScoreObjects(), Score_Parameters, scoreEditor);
     scoreEditor.update();
 }
 
-function onDataChangeAddNote(_data) {
+function onDataChangeAddNote( _data: Data_Note ) : void {
     // console.log( "onDataHasChngd", _data );
-    let note = new ScoreObject_Note();
-    note.setData(_data);
-    note.setTime(_data.getTime());
-    scoreEditor.addNote(note);
+    let note: ScoreObject_Note = new ScoreObject_Note();
+    note.setData( _data );
+    note.setTime( _data.getTime() );
+    scoreEditor.addNote( note );
     updateScoreObjectPos();
     // scoreEditor.update();
 }
-dataScore.setCallbackChangeAddNote(onDataChangeAddNote);
+dataScore.setCallbackChangeAddNote( onDataChangeAddNote );
 
-function onDataChangeRemoveNote(_data) {
+function onDataChangeRemoveNote( _data: Data_Note ) {
     // console.log( "onDataHasChngdRemoveNote", _data );
-    scoreEditor.removeNote(_data);
+    scoreEditor.removeNote( _data );
     updateScoreObjectPos();
 }
-dataScore.setCallbackChangeRemoveNote(onDataChangeRemoveNote);
+dataScore.setCallbackChangeRemoveNote( onDataChangeRemoveNote );
 
-var noteOnPress = null;
-function pressOnMouse(_mousePos) {
-    for (let i = 0; i < scoreEditor.getSelectedScoreObjects().length; i++) {
+var noteOnPress: ScoreObject = null;
+function pressOnMouse( _mousePos: ScreenPos ) : ScoreObject {
+    for (let i: number = 0; i < scoreEditor.getSelectedScoreObjects().length; i++) {
         if( scoreEditor.getSelectedScoreObjects()[i].handleMouse( _mousePos ) ) {
             return scoreEditor.getSelectedScoreObjects()[i];
         }
@@ -130,27 +144,27 @@ function pressOnMouse(_mousePos) {
     return null;
 }
 
-function onMouseInput(_mousePos, _type, _pos, _editMode) {
+function onMouseInput( _mousePos: ScreenPos, _type: MouseAction, _pos: ScorePos, _editMode: Edit_Area ) : void {
     // console.log("onMOuseIn", _mousePos, _type, _pos);
 
-    if( _type == "click" ) {
+    if( _type == MouseAction.CLICK ) {
         noteOnPress = pressOnMouse(_mousePos);
         console.log( "click", noteOnPress );
         return;
     }
 
-    if (_type == "dblClick" && _editMode == Edit_Area.STAFF) {
+    if (_type == MouseAction.DBLCLICK && _editMode == Edit_Area.STAFF) {
 
         const note = pressOnMouse(_mousePos);
         if (note != null) {
-            dataScore.removeNote(note.getData());
+            dataScore.removeNote( note.getData() as Data_Note );
             return;
         }
 
         dataScore.addNote(_pos);
         return;
     }
-    if (_type == "drag") {
+    if ( _type == MouseAction.DRAG ) {
         // const note = pressOnMouse(_mousePos);
         // console.log("drag", note, _pos);
         if (noteOnPress != null) {

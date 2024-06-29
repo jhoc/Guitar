@@ -1,20 +1,20 @@
 
 export class jTK_Fraction{
-  m_numerator;
-  m_denominator;
-    constructor( _num, _denom) {
+  m_numerator : number;
+  m_denominator : number;
+    constructor( _num: number, _denom: number ) {
         this.m_numerator = _num;
         this.m_denominator = _denom;
     }
 
-num() {
+num() : number {
     return this.m_numerator;
 }
-denom() {
+denom() : number {
     return this.m_denominator;
 }
 
-    gcd( a, b ) {
+    gcd( a: number , b: number  ) : number {
         if( b == 1 ) return 1;
         if( a < 0 ) {
           a *= -1;
@@ -33,14 +33,14 @@ denom() {
           return a;
     }
 
-reduce() {
+reduce() : void {
     if( this.m_numerator == 0 ) {
         this.m_denominator = 4;
         return;
       }
       if( this.m_denominator <= 0 ) return;
       // std::cout << "Fraction::reduce n " << numerator << ", d " << denominator << std::endl;
-      var tmp = this.gcd( this.m_numerator, this.m_denominator );
+      var tmp: number = this.gcd( this.m_numerator, this.m_denominator );
       // std::cout << "Fraction::reduce gcd. n " << numerator << ", d " << denominator << std::endl;
        this.m_numerator = this.m_numerator / tmp;
        this.m_denominator = this.m_denominator / tmp;
@@ -48,27 +48,27 @@ reduce() {
        // return *this;
     }
 
-    toNum() {
+    toNum() : number {
       return this.m_numerator / this.m_denominator;
     }
 
-    add( _frac ) {
+    add( _frac: jTK_Fraction ) : void {
         this.m_numerator = this.m_numerator * _frac.denom() + _frac.num() * this.m_denominator;
         this.m_denominator *= _frac.denom();
         this.reduce();
     }
 
-    sub( _frac ) {
+    sub( _frac: jTK_Fraction ) : void {
         this.m_numerator = this.m_numerator * _frac.denom() - _frac.num() * this.m_denominator;
         this.m_denominator *= _frac.denom();
         this.reduce();
     }
 
-    equals( _frac ) {
+    equals( _frac: jTK_Fraction ) : void {
 
     }
 
-    smallerThan( _frac ) {
+    smallerThan( _frac: jTK_Fraction ) : boolean {
       if( this.toNum() < _frac.toNum() ) return true;
       return false;
     }
@@ -77,7 +77,7 @@ reduce() {
     //   return this.toString();
     // }
  
-    toString() {
+    toString() : string {
       return "(" + this.m_numerator + "/" + this.m_denominator + ")";
     }
 

@@ -4,16 +4,18 @@ import {
 import {
     musicData
 } from "./MusicDefinitions.js";
+import {
+    MenuHeader
+} from "./menuHeader.js"
 
 
-
-const scoreCanvas = document.getElementById('scoreCanvas');
-const score = new Score(scoreCanvas, musicData.instrumentAt(0));
+const scoreCanvas: HTMLCanvasElement = document.getElementById('scoreCanvas') as HTMLCanvasElement;
+const score: Score = new Score(scoreCanvas, musicData.instrumentAt(0));
 // console.log( scoreCanvas, score );
 score.update();
 
-var head = document.getElementById('menuheader') as MenuHeader || null;
-var element = head.createButton('other', "./images/material-symbols--edit-square-outline-rounded.svg");
+var head: MenuHeader = document.getElementById('menuheader') as MenuHeader;
+var element: HTMLButtonElement = head.createButton('other', "./images/material-symbols--edit-square-outline-rounded.svg");
 head.addHeaderLeftIcon(element);
 element.addEventListener("click", e => {
 console.log( "Edit" );

@@ -1,4 +1,5 @@
 {
+  // "extends": "./configs/base",
   "compilerOptions": {
     "outDir": "./built",
     "target": "ES2016",

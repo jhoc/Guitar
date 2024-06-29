@@ -1,7 +1,9 @@
 import {
-    musicData
+    musicData, Instrument, IntervallArray, ChordFingering
 } from "./MusicDefinitions.js";
-
+import {
+    Diagram, MouseClickBehaviour
+} from "./Diagram.js"
 const template = document.createElement('template')
 
 template.innerHTML = `
@@ -16,21 +18,39 @@ template.innerHTML = `
   <option value="SETCHORDFINGERING">Set Fingering</option>
 </select>
   `
+interface callbackChordFingerChangeType {
+    ( _fing: ChordFingering ) : void
+}
+interface callbackChordStringChangeType {
+    ( _index: number ) : void
+}
+interface callbackScaleFingerChangeType {
+    ( _fing: number ) : void
+}
+interface callbackChordFingerChangeType {
+    ( _fing: ChordFingering ) : void
+}
+interface callbackScaleChangeType {
+    ( _scale: IntervallArray ) : void
+}
+interface callbackMouseBehaviourChangeType {
+    ( _v: MouseClickBehaviour ) : void
+}
 // create a class, and clone the content of the template into it
 export class DiagramOptionsSelector extends HTMLElement {
 
-    chordFingeringSelect;
-    chordFingeringStringSelect;
-    scaleFingeringSelect;
-    mouseBehaviourSelect;
-    instrument;
+    chordFingeringSelect: HTMLSelectElement;
+    chordFingeringStringSelect: HTMLSelectElement;
+    scaleFingeringSelect: HTMLSelectElement;
+    mouseBehaviourSelect: HTMLSelectElement;
+    instrument: Instrument;
 
-    callbackOnChordFingeringChange;
-    callbackOnChordStringChange;
-    callbackOnScaleFingeringChange;
+    callbackOnChordFingeringChange : callbackChordFingerChangeType;
+    callbackOnChordStringChange: callbackChordStringChangeType;
+    callbackOnScaleFingeringChange : callbackScaleFingerChangeType;
     scaleSelect;
-    callbackOnScaleChange;
-    callbackOnMouseBehaviourChange;
+    callbackOnScaleChange : callbackScaleChangeType;
+    callbackOnMouseBehaviourChange: callbackMouseBehaviourChangeType;
 
     constructor() {
         super()
@@ -46,134 +66,153 @@ export class DiagramOptionsSelector extends HTMLElement {
         // console.log("DiagramOptionsSelector.connected");
 
 
-        this.chordFingeringSelect = this.shadowRoot.getElementById('chordFingering');
+        this.chordFingeringSelect = this.shadowRoot.getElementById('chordFingering') as HTMLSelectElement;
         this.chordFingeringSelect.addEventListener('change', this.onChordFingeringChange.bind(this), false);
-        this.chordFingeringStringSelect = this.shadowRoot.getElementById('chordFingeringString');
+        this.chordFingeringStringSelect = this.shadowRoot.getElementById('chordFingeringString') as HTMLSelectElement;
         this.chordFingeringStringSelect.addEventListener('change', this.onChordStringChange.bind(this), false);
-        this.scaleFingeringSelect = this.shadowRoot.getElementById('scaleFingering');
+        this.scaleFingeringSelect = this.shadowRoot.getElementById('scaleFingering') as HTMLSelectElement;
         this.scaleFingeringSelect.addEventListener('change', this.onScaleFingeringChange.bind(this), false);
-        this.mouseBehaviourSelect = this.shadowRoot.getElementById('mouseBehaviour');
-        this.shadowRoot.addEventListener( 'change', this.onMouseBehaviourChange.bind(this), false );
+        this.mouseBehaviourSelect = this.shadowRoot.getElementById('mouseBehaviour') as HTMLSelectElement;
+        this.shadowRoot.addEventListener('change', this.onMouseBehaviourChange.bind(this), false);
 
         this.fillChordFingeringContent();
         this.fillChordStringContent();
         this.fillScaleFingeringContent();
     }
 
-setInstrument( _instr ) {
-    // console.log( _instr );
-    this.instrument = _instr;
-    this.fillChordStringContent();
-}
+    setInstrument( _instr: Instrument ) : void {
+        // console.log( _instr );
+        this.instrument = _instr;
+        this.fillChordStringContent();
+    }
 
-    setCallbackOnChordFingeringChange(_function) {
+    setCallbackOnChordFingeringChange( _function : callbackChordFingerChangeType ) : void {
         this.callbackOnChordFingeringChange = _function;
     }
-    onChordFingeringChange() {
-        const index = this.chordFingeringSelect.value;
+    onChordFingeringChange() : void {
+        const index: number = parseInt( this.chordFingeringSelect.value );
         // console.log( "onCHordFingChange ", index );
-        if( index < 0 ) {
+        if (index < 0) {
             this.mouseBehaviourSelect.disabled = true;
             this.mouseBehaviourSelect.selectedIndex = 0;
         } else {
             this.mouseBehaviourSelect.disabled = false;
         }
-        this.callbackOnChordFingeringChange(musicData.chordFingeringAt(index));
+        this.callbackOnChordFingeringChange( musicData.chordFingeringAt( index ) );
     }
 
-    setCallbackOnChordFingeringStringChange(_function) {
+    setCallbackOnChordFingeringStringChange( _function: callbackChordStringChangeType ) {
         this.callbackOnChordStringChange = _function;
     }
-    onChordStringChange() {
-      // const index = this.chordSelect.selectedIndex - 1;
-      const index = this.chordFingeringStringSelect.value;
-      this.callbackOnChordStringChange( index );
+    onChordStringChange() : void {
+        console.log( "Never used" );
+        // const index = this.chordSelect.selectedIndex - 1;
+        const index: number = parseInt( this.chordFingeringStringSelect.value );
+        this.callbackOnChordStringChange(index);
     }
 
-    setCallbackOnScaleFingeringChange(_function) { 
+    setCallbackOnScaleFingeringChange( _function: callbackScaleFingerChangeType ) {
         this.callbackOnScaleFingeringChange = _function;
     }
-    onScaleFingeringChange() {
-        const index = this.scaleSelect.value;
-        this.callbackOnScaleChange(musicData.scaleAt(index));
+    onScaleFingeringChange() : void {
+        console.log( "Never used" );
+        // const index: number = parseInt( this.scaleSelect.value );
+        // console.log( "Never used", index );
+        // this.callbackOnScaleChange(musicData.scaleAt(index));
     }
 
-    setCallbackOnMouseBehaviourChange( _function ) {
+    setCallbackOnMouseBehaviourChange( _function: callbackMouseBehaviourChangeType ) {
         // console.log( "diaOptSel.setCallbackonMouseBehav");
         this.callbackOnMouseBehaviourChange = _function;
     }
-    onMouseBehaviourChange() {
+    onMouseBehaviourChange() : void {
         // console.log( "diaOptSel.onMouseBehav");
-        this.callbackOnMouseBehaviourChange( this.mouseBehaviourSelect.value );
+        // const v = this.mouseBehaviourSelect.value as MouseClickBehaviour;
+        // console.log( v );
+        var v;
+        // switch ( v ) {
+            switch ( this.mouseBehaviourSelect.value ) {
+            case 'SETCHORDFINGERING': {
+                v = MouseClickBehaviour.SETCHORDFINGERING;
+                break;
+            }
+            case 'CUSTOM': {
+                v = MouseClickBehaviour.CUSTOM;
+                break;
+            }
+        }
+        this.callbackOnMouseBehaviourChange(v);
     }
 
-    fillChordFingeringContent() {
-        const elem = this.chordFingeringSelect;
-        var opt = document.createElement("option");
+    fillChordFingeringContent() : void {
+        const elem: HTMLSelectElement = this.chordFingeringSelect;
+        var opt: HTMLOptionElement = document.createElement("option");
         opt.setAttribute('value', '-1');
         opt.innerHTML = "Chord Fingering";
         elem.add(opt);
-        for (var i = 0; i < musicData.chordFingering().length; i++) {
-            var opt = document.createElement("option");
+        for (var i: number = 0; i < musicData.chordFingering().length; i++) {
+            var opt: HTMLOptionElement = document.createElement("option");
             // opt.setAttribute("value", i);
-            opt.setAttribute("value", musicData.chordFingeringAt(i).index() );
+            opt.setAttribute("value", musicData.chordFingeringAt(i).index().toString() );
             opt.innerHTML = musicData.chordFingeringAt(i).name();
-            elem.add( opt );
+            elem.add(opt);
         }
     }
 
-    fillChordStringContent() {
-        if( this.instrument == undefined ) {
+    fillChordStringContent() : void {
+        if (this.instrument == undefined) {
             return;
         }
-        const elem = this.chordFingeringStringSelect
-        for (var i = 0; i < this.instrument.pitch().length; i++) {
-            var opt = document.createElement("option");
+        const elem: HTMLSelectElement = this.chordFingeringStringSelect
+        for (var i: number = 0; i < this.instrument.pitch().length; i++) {
+            var opt: HTMLOptionElement = document.createElement("option");
             opt.setAttribute("value", i.toString());
             opt.innerHTML = this.instrument.pitchAt(i).name();
             elem.add(opt);
         }
     }
 
-    fillScaleFingeringContent() {
-        const elem = this.scaleFingeringSelect;
-        var opt = document.createElement("option");
+    fillScaleFingeringContent() : void {
+        const elem: HTMLSelectElement = this.scaleFingeringSelect;
+        var opt: HTMLOptionElement = document.createElement("option");
         opt.setAttribute('value', '-1');
         opt.innerHTML = "Scale Fingering";
         elem.add(opt);
-        for (var i = 0; i < musicData.scaleFingering().length; i++) {
+        for (var i: number = 0; i < musicData.scaleFingering().length; i++) {
             var opt = document.createElement("option");
             opt.setAttribute("value", i.toString());
-            opt.innerHTML = musicData.scaleFingeringAt(i);
+            opt.innerHTML = musicData.scaleFingeringAt(i).toString();
             elem.add(opt);
         }
     }
 
-    setDiagram(_dia) {
+    setDiagram( _dia: Diagram ) : void {
         // return;
         // console.log( _dia.getRoot(), _dia.getChord(), _dia.getScale() );
         // this.pitchSelect[_dia.getRoot().index()].selected = true;
         if (_dia.getChord() != undefined) {
-             this.chordFingeringSelect.disabled = false;
-             this.chordFingeringStringSelect.disabled = false;
-             if( _dia.getChordFingering() != undefined ) {
-                this.chordFingeringSelect.value = _dia.getChordFingering().index();
-             }
-             this.mouseBehaviourSelect.disabled = false;
+            this.chordFingeringSelect.disabled = false;
+            this.chordFingeringStringSelect.disabled = false;
+            if (_dia.getChordFingering() != undefined) {
+                this.chordFingeringSelect.value = _dia.getChordFingering().index().toString();
+            }
+            this.mouseBehaviourSelect.disabled = false;
         } else {
-            this.chordFingeringSelect[0].selected = true;
+            // this.chordFingeringSelect[0].selected = true;
+            this.chordFingeringSelect.value = '-1';
             this.chordFingeringSelect.disabled = true;
-            this.chordFingeringStringSelect.disabled = true;  
+            this.chordFingeringStringSelect.disabled = true;
             this.mouseBehaviourSelect.disabled = true;
             this.mouseBehaviourSelect.selectedIndex = 0;
         }
         if (_dia.getScale() != undefined) {
             this.scaleFingeringSelect.disabled = false;
         } else {
-            this.scaleFingeringSelect[0].selected = true;
+            // this.scaleFingeringSelect[0].selected = true;
+            this.scaleFingeringSelect.value = '-1';
             this.scaleFingeringSelect.disabled = true;
         }
     }
 }
 // define a custom element called 'nav-bar' using the navBar class
-customElements.define('jui-diagramoptionsselector', DiagramOptionsSelector);
+customElements.define( 'jui-diagramoptionsselector', DiagramOptionsSelector );

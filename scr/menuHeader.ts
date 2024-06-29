@@ -135,17 +135,17 @@ dialog[open] {
 
   `
 // create a class, and clone the content of the template into it
-class MenuHeader extends HTMLElement {
-  menuButton;
-  menuBox;
+export class MenuHeader extends HTMLElement {
+  menuButton: HTMLElement[] = [];
+  // menuBox;
     constructor() {
         super()
 
         this.menuButton = [];
-        this.menuBox = [];
+        // this.menuBox = [];
     }
 
-    connectedCallback() {
+    connectedCallback() : void {
         this.attachShadow({
             mode: 'open'
         })
@@ -155,8 +155,8 @@ class MenuHeader extends HTMLElement {
             this.handleMouse(evt);
         }, false);
 
-        var dialog = this.shadowRoot.getElementById("dialog") as HTMLDialogElement || null;
-        var dialogFrame = this.shadowRoot.getElementById("dialogFrame") as HTMLIFrameElement || null;
+        var dialog: HTMLDialogElement = this.shadowRoot.getElementById("dialog") as HTMLDialogElement || null;
+        var dialogFrame: HTMLIFrameElement = this.shadowRoot.getElementById("dialogFrame") as HTMLIFrameElement || null;
         this.shadowRoot.getElementById("info").addEventListener('click', function () {
             console.log("Info", dialog);
             dialogFrame.src = "info.html";
@@ -169,7 +169,7 @@ class MenuHeader extends HTMLElement {
         })
 
         dialog.addEventListener("click", e => {
-            const dialogDimensions = dialog.getBoundingClientRect()
+            const dialogDimensions: DOMRect = dialog.getBoundingClientRect()
             if (
                 e.clientX < dialogDimensions.left ||
                 e.clientX > dialogDimensions.right ||
@@ -184,15 +184,15 @@ class MenuHeader extends HTMLElement {
         })
     }
 
-    handleMouse(evt) {
+    handleMouse( evt : MouseEvent ) : void {
         // console.log("docClick", menus.length );
-        var menu = this.shadowRoot.getElementById('menu-box');
+        var menu: HTMLUListElement = this.shadowRoot.getElementById('menu-box') as HTMLUListElement;
         if (menu.style.visibility != 'hidden') {
             menu.style.visibility = 'hidden';
             menu.style.opacity = '0';
 
         }
-        menu = this.shadowRoot.getElementById('menu-boxR');
+        menu = this.shadowRoot.getElementById('menu-boxR') as HTMLUListElement;
         if (menu.style.visibility != 'hidden') {
             menu.style.visibility = 'hidden';
             menu.style.opacity = '0';
@@ -209,7 +209,7 @@ class MenuHeader extends HTMLElement {
         }
     }
 
-    isInElem(evt, elem) {
+    isInElem( evt: MouseEvent, elem: DOMRect ) : boolean {
         if (
             evt.clientX < elem.left ||
             evt.clientX > elem.right ||
@@ -221,7 +221,7 @@ class MenuHeader extends HTMLElement {
         return true;
     }
 
-    placeMenu(_sourceElem, _menuElem) {
+    placeMenu( _sourceElem: HTMLElement, _menuElem: HTMLElement ) {
         var rect = _sourceElem.getBoundingClientRect();
         var menuDim = _menuElem.getBoundingClientRect();
 
@@ -229,7 +229,7 @@ class MenuHeader extends HTMLElement {
 
         if (_menuElem.style.visibility == '' || _menuElem.style.visibility == 'hidden') {
             _menuElem.style.visibility = 'visible';
-            _menuElem.style.opacity = 1;
+            _menuElem.style.opacity = '1';
             if (rect.left + menuDim.width > document.body.clientWidth) {
                 _menuElem.style.left = document.body.clientWidth - menuDim.width + 'px';
                 // document.getElementById('menu-boxR').style.left = rect.left + 'px';
@@ -239,28 +239,28 @@ class MenuHeader extends HTMLElement {
             _menuElem.style.top = rect.bottom + 'px';
         } else {
             _menuElem.style.visibility = 'hidden';
-            _menuElem.style.opacity = 0;
+            _menuElem.style.opacity = '0';
         }
     }
 
-    addMenuEntry(_name, _function) {
+    addMenuEntry( _name: string, _function) : void {
 
     }
 
-    addHeaderRightIcon(_elem) {
+    addHeaderRightIcon( _elem: HTMLElement ) : void {
         this.shadowRoot.getElementById('right-btn').prepend(_elem);
         this.menuButton.push(_elem);
     }
 
-    addHeaderLeftIcon(_elem) {
+    addHeaderLeftIcon( _elem : HTMLElement ) : void {
         this.shadowRoot.getElementById('left-btn').append(_elem);
         this.menuButton.push(_elem);
     }
 
 
-    createButton(id, iconPath) {
+    createButton( id: string, iconPath: string) : HTMLButtonElement {
         // var elem = document.createElement("button");
-        var elem = document.createElement("button");
+        var elem: HTMLButtonElement = document.createElement("button");
         // console.log( "url(\'" + iconPath + "\') center no-repeat" );
         elem.style.backgroundColor = '#aaeeff';
         elem.style.background = "url(\'" + iconPath + "\') center no-repeat";

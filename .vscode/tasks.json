@@ -7,6 +7,18 @@
             "label": "startServer",
             "type": "shell",
             "command": "echo hello"
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "tsc: build - tsconfig.json"
         }
     ]
 }

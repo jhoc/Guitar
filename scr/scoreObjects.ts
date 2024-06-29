@@ -5,21 +5,28 @@ import {
     jTK_Fraction
 } from "./jUITK_Math_Fraction.js"
 import {
-    ScorePos
+    ScorePos, Data_ScoreObject,
+    Data_Score
 } from "./Data_Score.js"
+import { ScreenPos } from "./types.js";
+
+export enum ScoreObjectType {
+    SCOREOBJECT, NOTE, DIAGRAM
+}
 
 export class ScoreObject {
-    ctx;
-    m_x;
-    m_y;
-    m_data;
-    m_barAndTime;
-    m_duration;
-    m_isSelected;
+    ctx: CanvasRenderingContext2D;
+    m_x: number = 0;
+    m_y: number = 0;
+    m_data: Data_ScoreObject;
+    m_barAndTime: ScorePos;
+    m_duration: jTK_Fraction;
+    m_isSelected: boolean;
+
     constructor() {
         this.ctx;
-        this.m_x = 0;
-        this.m_y = 0;
+        // this.m_x = 0;
+        // this.m_y = 0;
         this.m_data;
         this.m_barAndTime;
         // {
@@ -27,73 +34,74 @@ export class ScoreObject {
         //     time: new jTK_Fraction(),
         //     repetition: 0,
         // };
-        this.m_duration
+        // this.m_duration
 
-        this.m_isSelected = false;
+        // this.m_isSelected = false;
     }
 
-    setCtx(_ctx) {
+    setCtx( _ctx: CanvasRenderingContext2D ) : void {
         this.ctx = _ctx;
     }
 
-    getX() {
+    getX() : number {
         return this.m_x;
     }
-    setX(_x) {
+    setX( _x: number ) : void {
         this.m_x = _x;
     }
-    getY() {
+    getY() : number {
         return this.m_y;
     }
-    setY(_y) {
+    setY( _y: number ) : void {
         this.m_y = _y;
     }
-    setData(_data) {
+    setData( _data: Data_ScoreObject ) : void {
         this.m_data = _data;
     }
-    getData() {
+    getData() : Data_ScoreObject{
         return this.m_data;
     }
 
-    setTime(_time) {
+    setTime( _time: ScorePos ) : void {
         this.m_barAndTime = _time;
     }
-    getTime() {
+    getTime() : ScorePos {
         return this.m_barAndTime;
     }
 
-    setDuration(_dur) {
+    setDuration( _dur: jTK_Fraction ) : void {
         this.m_duration = _dur;
     }
 
-    getDuration() {
+    getDuration() : jTK_Fraction{
         return this.m_duration;
     }
 
-    setSelect( _b ) {
+    setSelect( _b: boolean ) : void {
         this.m_isSelected = _b;
     }
-    isSelected() {
+    isSelected() : boolean {
         return this.m_isSelected;
     }
 
-    getType() {
-        return "scoreobject";
+    getType() : ScoreObjectType {
+        return  ScoreObjectType.SCOREOBJECT;
     }
 
-    handleMouse( _mousePos ) {
+    handleMouse( _mousePos: ScreenPos ) : boolean{
         return false;
     }
+    draw() : void {};
 }
 
 export class ScoreObject_Note extends ScoreObject {
     constructor() {
         super();
     }
-    getType() {
-        return "scoreobject_note";
+    getType() : ScoreObjectType {
+        return ScoreObjectType.NOTE;
     }
-    draw() {
+    draw() : void {
         this.ctx.fillStyle = "rgb(0 0 0 / 100%)";
         // this.ctx.strokeStyle = "rgb(0 255 255 / 100%)";
         // console.log( "scoreObj.draw ", this.m_x + _xOff, this.m_y + _yOff );
@@ -102,12 +110,12 @@ export class ScoreObject_Note extends ScoreObject {
         this.ctx.fill();
     }
 
-    handleMouse( _mousePos ) {
+    handleMouse( _mousePos: ScreenPos ) : boolean {
         if (_mousePos.x < this.m_x) return false;
         if (_mousePos.y < this.m_y - Score_Parameters.noteSize) return false;
         if (_mousePos.x > this.m_x + (Score_Parameters.noteSize * 2)) return false;
         if (_mousePos.y > this.m_y + (Score_Parameters.noteSize)) return false;
-        console.log( "scoreObj.handleMouse return true" );
+        // console.log( "scoreObj.handleMouse return true" );
         return true;
     }
 }

@@ -134,11 +134,13 @@ dialog[open] {
 
   `;
 // create a class, and clone the content of the template into it
-class MenuHeader extends HTMLElement {
+export class MenuHeader extends HTMLElement {
+    // menuBox;
     constructor() {
         super();
         this.menuButton = [];
-        this.menuBox = [];
+        this.menuButton = [];
+        // this.menuBox = [];
     }
     connectedCallback() {
         this.attachShadow({
@@ -208,7 +210,7 @@ class MenuHeader extends HTMLElement {
         // console.log(document.getElementById('menu-boxR'), document.getElementById('menu-boxR').style.visibility, rect.left);
         if (_menuElem.style.visibility == '' || _menuElem.style.visibility == 'hidden') {
             _menuElem.style.visibility = 'visible';
-            _menuElem.style.opacity = 1;
+            _menuElem.style.opacity = '1';
             if (rect.left + menuDim.width > document.body.clientWidth) {
                 _menuElem.style.left = document.body.clientWidth - menuDim.width + 'px';
                 // document.getElementById('menu-boxR').style.left = rect.left + 'px';
@@ -220,7 +222,7 @@ class MenuHeader extends HTMLElement {
         }
         else {
             _menuElem.style.visibility = 'hidden';
-            _menuElem.style.opacity = 0;
+            _menuElem.style.opacity = '0';
         }
     }
     addMenuEntry(_name, _function) {

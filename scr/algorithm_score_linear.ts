@@ -1,5 +1,6 @@
+import { ScoreObject } from "./scoreObjects";
 
-var objInBar = [];
+var objInBar: ScoreObject[][] = [];
 
 // _scoreObjects need to be sorted!!!
 export function algo_lin_setXPos(_scoreObjects, _scoreParameters, _scoreEditor) {

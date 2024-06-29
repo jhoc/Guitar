@@ -1,14 +1,22 @@
 import { Diagram, } from "./Diagram.js";
 export class DiagramList {
+    ;
+    ;
+    ;
     constructor(_canvas, _instrument) {
-        this.canvas = _canvas;
-        this.ctx = _canvas.getContext('2d');
         this.m_diagramList = [];
         this.highlightRow = 0;
+        this.gapBtwDia = 0;
+        this.gapBtwDiaMargin = 0;
+        this.scrollLeftAmount = 0;
+        this.canvas = _canvas;
+        this.ctx = _canvas.getContext('2d');
+        // this.m_diagramList = [];
+        // this.highlightRow = 0;
         this.instrument = _instrument; //tmp
         this.gapBtwDia = 34;
         this.gapBtwDiaMargin = 0.14 * this.gapBtwDia;
-        this.scrollLeftAmount = 0;
+        // this.scrollLeftAmount = 0;
         // this.addDiagram(_instrument);
         //  this.m_diagramList[0].deserialize();
         if (!this.loadLocalStorage()) {
@@ -63,6 +71,7 @@ export class DiagramList {
         if (this.m_diagramList.length < 2)
             return;
         this.m_diagramList.splice(_i, 1);
+        localStorage.setItem('diagramList', JSON.stringify(this.m_diagramList));
         this.calculateDimension();
         this.update();
     }
@@ -112,7 +121,7 @@ export class DiagramList {
     }
     mouseMove(_evt) {
         var rect = this.canvas.getBoundingClientRect();
-        let x = _evt.clientX - rect.left;
+        // let x: number = _evt.clientX - rect.left;
         let y = _evt.clientY - rect.top;
         for (let i = 0; i < this.m_diagramList.length; i++) {
             if (y > this.m_diagramList[i].getYPos() - this.gapBtwDia && y < this.m_diagramList[i].getYPos() + this.m_diagramList[i].getHeight()) {
@@ -128,7 +137,8 @@ export class DiagramList {
         // this.update();
     }
     getLayoutProperties() {
-        return [this.gapBtwDia, this.gapBtwDiaMargin];
+        return { gapBtwDia: this.gapBtwDia, gapBtwDiaMargin: this.gapBtwDiaMargin };
+        // return [this.gapBtwDia, this.gapBtwDiaMargin];
     }
     setCallbackOnSelectDiagram(_function) {
         this.onSelectDiagramFunction = _function;
@@ -137,9 +147,10 @@ export class DiagramList {
         if (this.m_diagramList[this.highlightRow] == undefined)
             return;
         this.m_diagramList[this.highlightRow].setDiagram(_dia);
-        localStorage.setItem('diagramList', JSON.stringify(this.m_diagramList));
+        // localStorage.setItem( 'diagramList', JSON.stringify( this.m_diagramList ) );
         console.log(JSON.stringify(_dia.getChordFingering()));
         this.m_diagramList[this.highlightRow].createChordFingeringCoordinates();
+        localStorage.setItem('diagramList', JSON.stringify(this.m_diagramList));
         this.update();
     }
     getSelectedDiagram() {

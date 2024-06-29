@@ -1,6 +1,5 @@
 import { Diagram } from './Diagram.js';
 import { musicData } from "./MusicDefinitions.js";
-// console.log( "fdsjklfsdnkl" );
 const scrollDiagramCanvas = document.getElementById('scroll-editor-diagram');
 const diagramCanvas = document.getElementById('editor-diagram');
 const diagramSelector = document.getElementById('editor-diagramSelector');
@@ -37,6 +36,7 @@ function onChordFingereringStringChange(_s) {
 }
 diagramOptionsSelector.setCallbackOnChordFingeringStringChange(onChordFingereringStringChange);
 function onMouseBehaviourChange(_v) {
+    console.log("onMouseBevah", _v);
     dia.setMouseClickBehaviour(_v);
 }
 diagramOptionsSelector.setCallbackOnMouseBehaviourChange(onMouseBehaviourChange);
@@ -50,8 +50,7 @@ export function setEditorMaxWidth(_w) {
 }
 export function adaptEditorSize() {
     var windowW = document.body.clientWidth - 40; //window.innerWidth;
-    // var windowW = scrollDiagramCanvas.parentElement.clientWidth;
-    var scrollW = scrollDiagramCanvas.getBoundingClientRect().width;
+    // var scrollW = scrollDiagramCanvas.getBoundingClientRect().width;
     var canvasW = diagramCanvas.getBoundingClientRect().width;
     // console.log( "logic dia editor.resize", windowW, scrollW, canvasW );
     if (windowW > canvasW) {

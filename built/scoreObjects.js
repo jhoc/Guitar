@@ -1,9 +1,17 @@
 import { Score_Parameters } from "./scoreEditor.js";
+export var ScoreObjectType;
+(function (ScoreObjectType) {
+    ScoreObjectType[ScoreObjectType["SCOREOBJECT"] = 0] = "SCOREOBJECT";
+    ScoreObjectType[ScoreObjectType["NOTE"] = 1] = "NOTE";
+    ScoreObjectType[ScoreObjectType["DIAGRAM"] = 2] = "DIAGRAM";
+})(ScoreObjectType || (ScoreObjectType = {}));
 export class ScoreObject {
     constructor() {
-        this.ctx;
         this.m_x = 0;
         this.m_y = 0;
+        this.ctx;
+        // this.m_x = 0;
+        // this.m_y = 0;
         this.m_data;
         this.m_barAndTime;
         // {
@@ -11,8 +19,8 @@ export class ScoreObject {
         //     time: new jTK_Fraction(),
         //     repetition: 0,
         // };
-        this.m_duration;
-        this.m_isSelected = false;
+        // this.m_duration
+        // this.m_isSelected = false;
     }
     setCtx(_ctx) {
         this.ctx = _ctx;
@@ -54,18 +62,20 @@ export class ScoreObject {
         return this.m_isSelected;
     }
     getType() {
-        return "scoreobject";
+        return ScoreObjectType.SCOREOBJECT;
     }
     handleMouse(_mousePos) {
         return false;
     }
+    draw() { }
+    ;
 }
 export class ScoreObject_Note extends ScoreObject {
     constructor() {
         super();
     }
     getType() {
-        return "scoreobject_note";
+        return ScoreObjectType.NOTE;
     }
     draw() {
         this.ctx.fillStyle = "rgb(0 0 0 / 100%)";
@@ -84,7 +94,7 @@ export class ScoreObject_Note extends ScoreObject {
             return false;
         if (_mousePos.y > this.m_y + (Score_Parameters.noteSize))
             return false;
-        console.log("scoreObj.handleMouse return true");
+        // console.log( "scoreObj.handleMouse return true" );
         return true;
     }
 }

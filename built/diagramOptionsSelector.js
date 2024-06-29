@@ -1,4 +1,5 @@
 import { musicData } from "./MusicDefinitions.js";
+import { MouseClickBehaviour } from "./Diagram.js";
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
@@ -45,7 +46,7 @@ export class DiagramOptionsSelector extends HTMLElement {
         this.callbackOnChordFingeringChange = _function;
     }
     onChordFingeringChange() {
-        const index = this.chordFingeringSelect.value;
+        const index = parseInt(this.chordFingeringSelect.value);
         // console.log( "onCHordFingChange ", index );
         if (index < 0) {
             this.mouseBehaviourSelect.disabled = true;
@@ -60,16 +61,19 @@ export class DiagramOptionsSelector extends HTMLElement {
         this.callbackOnChordStringChange = _function;
     }
     onChordStringChange() {
+        console.log("Never used");
         // const index = this.chordSelect.selectedIndex - 1;
-        const index = this.chordFingeringStringSelect.value;
+        const index = parseInt(this.chordFingeringStringSelect.value);
         this.callbackOnChordStringChange(index);
     }
     setCallbackOnScaleFingeringChange(_function) {
         this.callbackOnScaleFingeringChange = _function;
     }
     onScaleFingeringChange() {
-        const index = this.scaleSelect.value;
-        this.callbackOnScaleChange(musicData.scaleAt(index));
+        console.log("Never used");
+        // const index: number = parseInt( this.scaleSelect.value );
+        // console.log( "Never used", index );
+        // this.callbackOnScaleChange(musicData.scaleAt(index));
     }
     setCallbackOnMouseBehaviourChange(_function) {
         // console.log( "diaOptSel.setCallbackonMouseBehav");
@@ -77,7 +81,21 @@ export class DiagramOptionsSelector extends HTMLElement {
     }
     onMouseBehaviourChange() {
         // console.log( "diaOptSel.onMouseBehav");
-        this.callbackOnMouseBehaviourChange(this.mouseBehaviourSelect.value);
+        // const v = this.mouseBehaviourSelect.value as MouseClickBehaviour;
+        // console.log( v );
+        var v;
+        // switch ( v ) {
+        switch (this.mouseBehaviourSelect.value) {
+            case 'SETCHORDFINGERING': {
+                v = MouseClickBehaviour.SETCHORDFINGERING;
+                break;
+            }
+            case 'CUSTOM': {
+                v = MouseClickBehaviour.CUSTOM;
+                break;
+            }
+        }
+        this.callbackOnMouseBehaviourChange(v);
     }
     fillChordFingeringContent() {
         const elem = this.chordFingeringSelect;
@@ -88,7 +106,7 @@ export class DiagramOptionsSelector extends HTMLElement {
         for (var i = 0; i < musicData.chordFingering().length; i++) {
             var opt = document.createElement("option");
             // opt.setAttribute("value", i);
-            opt.setAttribute("value", musicData.chordFingeringAt(i).index());
+            opt.setAttribute("value", musicData.chordFingeringAt(i).index().toString());
             opt.innerHTML = musicData.chordFingeringAt(i).name();
             elem.add(opt);
         }
@@ -114,7 +132,7 @@ export class DiagramOptionsSelector extends HTMLElement {
         for (var i = 0; i < musicData.scaleFingering().length; i++) {
             var opt = document.createElement("option");
             opt.setAttribute("value", i.toString());
-            opt.innerHTML = musicData.scaleFingeringAt(i);
+            opt.innerHTML = musicData.scaleFingeringAt(i).toString();
             elem.add(opt);
         }
     }
@@ -126,12 +144,13 @@ export class DiagramOptionsSelector extends HTMLElement {
             this.chordFingeringSelect.disabled = false;
             this.chordFingeringStringSelect.disabled = false;
             if (_dia.getChordFingering() != undefined) {
-                this.chordFingeringSelect.value = _dia.getChordFingering().index();
+                this.chordFingeringSelect.value = _dia.getChordFingering().index().toString();
             }
             this.mouseBehaviourSelect.disabled = false;
         }
         else {
-            this.chordFingeringSelect[0].selected = true;
+            // this.chordFingeringSelect[0].selected = true;
+            this.chordFingeringSelect.value = '-1';
             this.chordFingeringSelect.disabled = true;
             this.chordFingeringStringSelect.disabled = true;
             this.mouseBehaviourSelect.disabled = true;
@@ -141,7 +160,8 @@ export class DiagramOptionsSelector extends HTMLElement {
             this.scaleFingeringSelect.disabled = false;
         }
         else {
-            this.scaleFingeringSelect[0].selected = true;
+            // this.scaleFingeringSelect[0].selected = true;
+            this.scaleFingeringSelect.value = '-1';
             this.scaleFingeringSelect.disabled = true;
         }
     }

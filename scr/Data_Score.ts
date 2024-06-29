@@ -20,13 +20,10 @@ export const Staff_Type = Object.freeze({
     STAFF: 'staff',
 })
 
-
-export class Data_Note {
+export class Data_ScoreObject {
     m_barAndTime: ScorePos;
-    m_duration: jTK_Fraction;
-    m_pitch: Pitch;
-    constructor() {
-  
+    constructor(){
+
     }
 
     setTime(_time: ScorePos) {
@@ -34,6 +31,15 @@ export class Data_Note {
     }
     getTime() : ScorePos {
         return this.m_barAndTime;
+    }
+}
+
+export class Data_Note extends Data_ScoreObject {
+  
+    m_duration: jTK_Fraction;
+    m_pitch: Pitch;
+    constructor() {
+  super();
     }
 
     setDuration(_dur: jTK_Fraction) {
@@ -104,7 +110,7 @@ export class Data_Score {
         }
     }
 
-    sortByTime( _a: Data_Note, _b: Data_Note ) : number {
+    sortByTime( _a: Data_ScoreObject, _b: Data_ScoreObject ) : number {
         // console.log( "sortByTime", _a, _b );
         if ( _a.getTime().bar < _b.getTime().bar ) {
             return -1;

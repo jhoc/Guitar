@@ -1,5 +1,12 @@
+import { musicData } from "./MusicDefinitions.js";
+import { ScoreEditor, Score_Parameters, Edit_Area } from "./scoreEditor.js";
+import { dataScore, } from "./Data_Score.js";
+import { algo_lin_setXPos } from "./algorithm_score_linear.js";
+import { ScoreObject_Note } from "./scoreObjects.js";
+import { MouseAction } from "./types.js";
 ////////////////////////////////////////// Menubar
 //////////////////////////////////////vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+console.log("Create ScoreEditor MenuBar.............");
 const menubar = document.getElementById('scoreEditorMenuBar') || null;
 var nav = menubar.createButton('navigation', "./images/mi--chevron-down.svg");
 menubar.addHeaderLeftIcon(nav);
@@ -14,8 +21,7 @@ nav.addEventListener('click', function () {
     // menubar.addMenuElement( li );
     menubar.openMenu(nav);
 });
-var element;
-element = menubar.createButton('navigation', "./images/mi--menu.svg");
+var element = menubar.createButton('navigation', "./images/mi--menu.svg");
 menubar.addHeaderRightIcon(element);
 element.addEventListener('click', function () {
     menubar.clearMenu();
@@ -34,8 +40,6 @@ element.addEventListener('click', function () {
 });
 ////////////////////////////////////////////////////// defines, creations, ....
 //////////////////////////////////////////////////////// ScoreEditor
-import { musicData } from "./MusicDefinitions.js";
-import { ScoreEditor, Score_Parameters, Edit_Area } from "./scoreEditor.js";
 const canvasScoreEditor = document.getElementById('scoreEditorCanvas');
 var scrollScoreEditor = document.getElementById('scoreEditorScroll');
 const scoreEditor = new ScoreEditor(canvasScoreEditor, musicData.instrumentAt(0));
@@ -67,9 +71,6 @@ window.addEventListener('resize', function (event) {
 }, true);
 ///////////////////////////////////////////////////////////
 ////////////////////////////vvvvvvvvvvvvv Data Logic
-import { dataScore, } from "./Data_Score.js";
-import { algo_lin_setXPos } from "./algorithm_score_linear.js";
-import { ScoreObject_Note } from "./scoreObjects.js";
 function updateScoreObjectPos() {
     algo_lin_setXPos(scoreEditor.getScoreObjects(), Score_Parameters, scoreEditor);
     scoreEditor.update();
@@ -101,12 +102,12 @@ function pressOnMouse(_mousePos) {
 }
 function onMouseInput(_mousePos, _type, _pos, _editMode) {
     // console.log("onMOuseIn", _mousePos, _type, _pos);
-    if (_type == "click") {
+    if (_type == MouseAction.CLICK) {
         noteOnPress = pressOnMouse(_mousePos);
         console.log("click", noteOnPress);
         return;
     }
-    if (_type == "dblClick" && _editMode == Edit_Area.STAFF) {
+    if (_type == MouseAction.DBLCLICK && _editMode == Edit_Area.STAFF) {
         const note = pressOnMouse(_mousePos);
         if (note != null) {
             dataScore.removeNote(note.getData());
@@ -115,7 +116,7 @@ function onMouseInput(_mousePos, _type, _pos, _editMode) {
         dataScore.addNote(_pos);
         return;
     }
-    if (_type == "drag") {
+    if (_type == MouseAction.DRAG) {
         // const note = pressOnMouse(_mousePos);
         // console.log("drag", note, _pos);
         if (noteOnPress != null) {

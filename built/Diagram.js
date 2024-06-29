@@ -1,7 +1,6 @@
-import { musicDefinition } from "./MusicDefinitions.js";
+import { isEqualFretboardCoord, musicDefinition } from "./MusicDefinitions.js";
 import { musicData } from "./MusicDefinitions.js";
-import { arraysEqual } from "./helper.js";
-var MouseClickBehaviour;
+export var MouseClickBehaviour;
 (function (MouseClickBehaviour) {
     MouseClickBehaviour[MouseClickBehaviour["CUSTOM"] = 0] = "CUSTOM";
     MouseClickBehaviour[MouseClickBehaviour["SETCHORDFINGERING"] = 1] = "SETCHORDFINGERING";
@@ -21,8 +20,8 @@ export class Diagram {
         this.fingerColorRoot = '#FF5555';
         this.fingerColorChord = '#BB99DD';
         this.fingerColorScale = '#99DDDD';
-        // customCoordinates: Coord[] = [];
         this.customCoordinates = [];
+        // customCoordinates = [];
         this.chordFingeringCoordinates = []; //[[1,2], [3,4]]; //[];
         if (_canvas != null) {
             this.canvas = _canvas;
@@ -48,8 +47,6 @@ export class Diagram {
         this.fingerColorRoot = '#FF5555';
         this.fingerColorChord = '#BB99DD';
         this.fingerColorScale = '#99DDDD';
-        this.customCoordinates = [];
-        this.chordFingeringCoordinates = []; //[[1,2], [3,4]]; //[];
         this.updateDimension();
     }
     setMouseClickBehaviour(_behaviour) {
@@ -193,14 +190,14 @@ export class Diagram {
             return;
         ///vvvvvvv build chord from startPitch
         var pIndex = pitches.indexOf(startPitch.pitch());
-        tempPitches = [];
+        var tempPitches = [];
         for (var i = 0; i < pitches.length; i++) {
             tempPitches.push(pitches[(pIndex + i) % pitches.length]);
         }
         pitches = tempPitches;
         // console.log("rotated:", tempPitches);
         ///^^^^^^
-        var tempPitches = []; // temporary
+        tempPitches = []; // temporary
         ///vvvvvvv order pitches to fingering
         // for (var i = 0; i < pitches.length; i++) {
         for (var i = 0; i < this.chordFingering.fingering().length; i++) {
@@ -222,7 +219,10 @@ export class Diagram {
                 // console.log( "check:", saite, fret, pitches[pitchIndex], musicDefinition.pitch( stringIndex + fret ).pitch() );
                 // }
                 if (pitches[pitchIndex] == musicDefinition.pitch(stringIndex + fret).pitch()) {
-                    coords.push([fret, saite]);
+                    coords.push({
+                        fret: fret,
+                        saite: saite
+                    }); //[fret, saite]);
                     pitchIndex++;
                     break;
                 }
@@ -266,13 +266,15 @@ export class Diagram {
         // console.log( x, y, this.yPos, coord );
         // this.mouseClickBehaviour = 'CUSTOM'; //'SETCHORDFINGERING'
         if (this.mouseClickBehaviour == MouseClickBehaviour.SETCHORDFINGERING) {
-            this.chordFingeringString = coord[1];
-            this.setChordFingeringFret(coord[0]);
+            // console.log( "SetChordFingFret");
+            this.chordFingeringString = coord.saite;
+            this.setChordFingeringFret(coord.fret);
             return;
         }
         let found = -1;
         for (let i = 0; i < this.customCoordinates.length; i++) {
-            if (arraysEqual(coord, this.customCoordinates[i])) {
+            // console.log( coord, this.customCoordinates[i] );
+            if (isEqualFretboardCoord(coord, this.customCoordinates[i])) {
                 // console.log( "mouseDonw", "found" );
                 found = i;
                 break;
@@ -287,7 +289,10 @@ export class Diagram {
         this.update();
     }
     posToCoord(_x, _y) {
-        var coord = [-1, -1];
+        var coord = {
+            fret: -1,
+            saite: -1
+        };
         if (_x < this.fretboardLeft) {
             _x = 0;
         }
@@ -296,22 +301,25 @@ export class Diagram {
             _x /= this.fretDelta;
             _x += 1;
         }
-        coord[0] = Math.floor(_x);
+        coord.fret = Math.floor(_x);
         _y -= this.fretboardTop;
         _y += this.stringDelta / 2;
         _y /= this.stringDelta;
-        coord[1] = Math.floor(_y);
+        coord.saite = Math.floor(_y);
         return coord;
     }
     coordToPos(_coord) {
-        var pos = [-1, -1];
-        if (_coord[0] == 0) {
-            pos[0] = this.fretboardLeft - this.fingerWidth;
+        var pos = {
+            x: -1,
+            y: -1
+        };
+        if (_coord.fret == 0) {
+            pos.x = this.fretboardLeft - this.fingerWidth;
         }
         else {
-            pos[0] = _coord[0] * this.fretDelta + this.fretboardLeft - this.fretDelta / 2;
+            pos.x = _coord.fret * this.fretDelta + this.fretboardLeft - this.fretDelta / 2;
         }
-        pos[1] = _coord[1] * this.stringDelta + this.fretboardTop;
+        pos.y = _coord.saite * this.stringDelta + this.fretboardTop;
         return pos;
     }
     updateDimension() {
@@ -441,11 +449,11 @@ export class Diagram {
         this.ctx.fillText(name, _x - (charW / 2), _y + (charH / 2));
     }
     drawCoords(_coords, _color) {
-        let coord = [];
+        let pos;
         for (let i = 0; i < _coords.length; i++) {
-            coord = this.coordToPos(_coords[i]);
-            //   console.log( "drawFinger", coord, this.customCoordinates[i] );
-            this.drawFinger(coord[0], coord[1], this.instrument.pitchFromCoord(_coords[i]).name(), _color);
+            pos = this.coordToPos(_coords[i]);
+            //   console.log( "drawFinger", pos, this.customCoordinates[i] );
+            this.drawFinger(pos.x, pos.y, this.instrument.pitchFromCoord(_coords[i]).name(), _color);
         }
     }
     drawScale(_scale, _color) {
@@ -502,7 +510,7 @@ export class Diagram {
     deserialize(_json) {
         var res = _json;
         for (const key in res) {
-            console.log(key, res[key]);
+            // console.log(key, res[key]);
             if (key == 'instrument') {
                 // console.log("fdshjflsdfhjk");
                 this.instrument = musicData.getInstrumentFromJson(res[key]);
