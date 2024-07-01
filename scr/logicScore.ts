@@ -10,7 +10,7 @@ import {
 
 
 const scoreCanvas: HTMLCanvasElement = document.getElementById('scoreCanvas') as HTMLCanvasElement;
-const score: Score = new Score(scoreCanvas, musicData.instrumentAt(0));
+const score: Score = new Score(scoreCanvas, musicData.instrumentAt(0)!);
 // console.log( scoreCanvas, score );
 score.update();
 

@@ -1,3 +1,4 @@
+"use strict";
 // window.addEventListener('load', function () {
 //     // console.log('All assets are loaded')
 //     document.getElementById("debug-div").innerHTML = window.devicePixelRatio;

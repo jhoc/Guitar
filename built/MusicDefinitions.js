@@ -42,6 +42,8 @@ class Instrument {
     }
     pitchAt(i) {
         //      console.log( "Instrument::this.pitch(i)", this.m_pitch[i] );
+        if (this.m_pitch[i] == undefined)
+            return null;
         return this.m_pitch[i];
     }
     fretNum() {
@@ -49,6 +51,8 @@ class Instrument {
     }
     pitchFromCoord(_coord) {
         // console.log( "PitchFromCoord", _coord, this.m_pitch[_coord[1]].index() + _coord[0], musicDefinition.pitch( this.m_pitch[_coord[1]].index() + _coord[0] ) );
+        if (this.m_pitch[_coord.saite] == undefined)
+            return null;
         return musicDefinition.pitch(this.m_pitch[_coord.saite].index() + _coord.fret);
     }
 }
@@ -100,24 +104,34 @@ class MusicDefinition {
     }
     pitch(_i) {
         //  console.log( this.m_pitch[_i] );
+        if (this.m_pitch[_i] == undefined)
+            return null;
         return this.m_pitch[_i];
     }
     pitchFromNameAndOctave(_name, _octave) {
         for (let i = _octave * 12; i < (_octave + 1) * 12; i++) {
+            if (this.m_pitch[i] == undefined)
+                return null;
             if (this.m_pitch[i].name() == _name) {
                 return this.m_pitch[i];
             }
         }
+        return null;
     }
     getPitchFromJson(_json) {
         for (const key in _json) {
             // console.log("getInstr:" ,key, _json[key]);
             if (key == 'm_index') {
+                if (this.m_pitch[_json[key]] == undefined)
+                    return null;
                 return this.m_pitch[_json[key]];
             }
         }
+        return null;
     }
     intervall(_i) {
+        if (this.m_intervall[_i] == undefined)
+            return null;
         return this.m_intervall[_i];
     }
 }
@@ -142,8 +156,10 @@ export class IntervallArray {
     intervall() {
         return this.m_intervall;
     }
-    intervallAt(i) {
-        return this.m_intervall[i];
+    intervallAt(_i) {
+        if (this.m_intervall[_i] == undefined)
+            return null;
+        return this.m_intervall[_i];
     }
 }
 export class ChordFingering {
@@ -165,6 +181,8 @@ export class ChordFingering {
         return this.m_fingering;
     }
     fingeringAt(_i) {
+        if (this.m_fingering[_i] == undefined)
+            return null;
         return this.m_fingering[_i];
     }
 }
@@ -202,6 +220,8 @@ class MusicData {
         return this.m_pitch;
     }
     pitchAt(_i) {
+        if (this.m_pitch[_i] == undefined)
+            return null;
         return this.m_pitch[_i];
     }
     instrument() {
@@ -209,6 +229,8 @@ class MusicData {
     }
     instrumentAt(_i) {
         //  console.log( "MusicData::instrument()", this.m_instrument[_i] );
+        if (this.m_instrument[_i] == undefined)
+            return null;
         return this.m_instrument[_i];
     }
     addInstrument(_instr) {
@@ -220,6 +242,7 @@ class MusicData {
                 return this.m_instrument[i];
             }
         }
+        return null;
     }
     getInstrumentFromJson(_json) {
         for (const key in _json) {
@@ -229,11 +252,14 @@ class MusicData {
                 return this.instrumentFromName(_json[key]);
             }
         }
+        return this.m_instrument[0];
     }
     chord() {
         return this.m_chord;
     }
     chordAt(_i) {
+        if (this.m_chord[_i] == undefined)
+            return null;
         return this.m_chord[_i];
     }
     chordFromName(_name) {
@@ -244,6 +270,7 @@ class MusicData {
                 return this.m_chord[i];
             }
         }
+        return null;
     }
     addChord(_chord) {
         _chord.setIndex(this.chordIndex++);
@@ -256,11 +283,14 @@ class MusicData {
                 return this.chordFromName(_json[key]);
             }
         }
+        return null;
     }
     scale() {
         return this.m_scale;
     }
     scaleAt(_i) {
+        if (this.m_scale[_i] == undefined)
+            return null;
         return this.m_scale[_i];
     }
     scaleFromName(_name) {
@@ -269,6 +299,7 @@ class MusicData {
                 return this.m_scale[i];
             }
         }
+        return null;
     }
     addScale(_scale) {
         _scale.setIndex(this.scaleIndex++);
@@ -281,11 +312,14 @@ class MusicData {
                 return this.scaleFromName(_json[key]);
             }
         }
+        return null;
     }
     chordFingering() {
         return this.m_chordFingering;
     }
     chordFingeringAt(_i) {
+        if (this.m_chordFingering[_i] == undefined)
+            return null;
         return this.m_chordFingering[_i];
     }
     chordFingeringFromName(_name) {
@@ -294,6 +328,7 @@ class MusicData {
                 return this.m_chordFingering[i];
             }
         }
+        return null;
     }
     addChordFingering(_fing) {
         _fing.setIndex(this.m_chordFingeringIndex++);
@@ -311,6 +346,8 @@ class MusicData {
         return this.m_scaleFingering;
     }
     scaleFingeringAt(_i) {
+        if (this.m_scaleFingering[_i] == undefined)
+            return null;
         return this.m_scaleFingering[_i];
     }
     addscaleFingering(_fing) {
@@ -320,12 +357,24 @@ class MusicData {
 }
 let musicData = new MusicData();
 let gPitches = [];
-gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 5));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('B', 4));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('G', 4));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('D', 4));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('A', 3));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 2));
+if (musicDefinition.pitchFromNameAndOctave('E', 5) != null) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 5));
+}
+if (musicDefinition.pitchFromNameAndOctave('B', 4) != null) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('B', 4));
+}
+if (musicDefinition.pitchFromNameAndOctave('G', 4) != null) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('G', 4));
+}
+if (musicDefinition.pitchFromNameAndOctave('D', 4) != null) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('D', 4));
+}
+if (musicDefinition.pitchFromNameAndOctave('B', 3) != null) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('A', 3));
+}
+if (musicDefinition.pitchFromNameAndOctave('E', 2) != null) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 2));
+}
 let guitarInstr = new Instrument("Guitar", gPitches, 24);
 musicData.addInstrument(guitarInstr);
 let gitPitches = [];

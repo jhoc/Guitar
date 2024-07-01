@@ -21,9 +21,9 @@ import {
 const editDiagramList: HTMLButtonElement = document.getElementById('edit-diagramList') as HTMLButtonElement;
 const deleteDiagramList: HTMLButtonElement = document.getElementById('delete-diagramList') as HTMLButtonElement;
 
-const scrollDiagramListCanvas: HTMLElement = document.getElementById('scroll-editor-diagramList')
+const scrollDiagramListCanvas: HTMLElement = document.getElementById('scroll-editor-diagramList') as HTMLDivElement;
 const diagramListCanvas: HTMLCanvasElement = document.getElementById('diagramList') as HTMLCanvasElement;
-const diagramList: DiagramList = new DiagramList(diagramListCanvas, musicData.instrumentAt(0));
+const diagramList: DiagramList = new DiagramList(diagramListCanvas, musicData.instrumentAt(0)!);
 const dialog: HTMLDialogElement = document.getElementById("dialog") as HTMLDialogElement || null;
 deleteDiagramList.addEventListener('click', function () {
     // console.log("removeDiaFromList")
@@ -34,15 +34,18 @@ deleteDiagramList.addEventListener('click', function () {
 
 editDiagramList.addEventListener('click', function () : void {
     dialog.showModal();
-    setEditorDiagram(diagramList.getSelectedDiagram());
+    if( diagramList.getSelectedDiagram() == undefined ) return;
+    setEditorDiagram(diagramList.getSelectedDiagram()!);
     // setEditorMaxWidth( document.getElementById("dialog").clientWidth );
     adaptEditorSize(); //file logicDiagramEditor.js
 })
-document.getElementById("dialogCloseButton").addEventListener('click', function () : void {
+if( document.getElementById("dialogCloseButton") != null ) {
+document.getElementById("dialogCloseButton")!.addEventListener('click', function () : void {
     diagramList.setSelectedDiagram(getEditorDiagram());
     dialog.close();
     diagramList.update();
 })
+}
 
 dialog.addEventListener("click", e => {
     const dialogDimensions: DOMRect = dialog.getBoundingClientRect()
@@ -64,7 +67,7 @@ function setEditor( _dia: Diagram ) : void {
 diagramList.setCallbackOnSelectDiagram(setEditor);
 
 
-function setPositionForSelected( _yPos: number ) : void {
+function setPositionForSelected( _yPos: number | undefined ) : void {
     if (_yPos == undefined) {
         // diagramSelector.style.display = 'none';
         return;
@@ -150,7 +153,7 @@ var head = document.getElementById('menuheader') as MenuHeader || null;
 element = head.createButton('other', "./images/ic--round-plus.svg");
 head.addHeaderRightIcon(element);
 element.addEventListener('click', function () {
-    diagramList.addDiagram(musicData.instrumentAt(0));
+    diagramList.addDiagram(musicData.instrumentAt(0)!);
     adaptSize();
 })
 

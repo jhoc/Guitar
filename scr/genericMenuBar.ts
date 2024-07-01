@@ -118,10 +118,11 @@ export class GenericMenuBar extends HTMLElement {
 
     }
 
-    connectedCallback() : void {
+    connectedCallback(): void {
         this.attachShadow({
             mode: 'open'
         })
+        if (this.shadowRoot == null) return;
         this.shadowRoot.appendChild(mtemplate.content.cloneNode(true))
 
         document.addEventListener("click", evt => {
@@ -129,7 +130,8 @@ export class GenericMenuBar extends HTMLElement {
         }, true);
     }
 
-    handleMouse( evt: MouseEvent ) : void {
+    handleMouse(evt: MouseEvent): void {
+        if (this.shadowRoot == null) return;
         // console.log("docClick", menus.length );
         var menu: HTMLUListElement = this.shadowRoot.getElementById('menu-box') as HTMLUListElement;
         if (menu.style.visibility != 'hidden') {
@@ -137,10 +139,10 @@ export class GenericMenuBar extends HTMLElement {
             menu.style.opacity = '0';
 
         }
-   
+
     }
 
-    isInElem(evt: MouseEvent, elem: DOMRect) : boolean {
+    isInElem(evt: MouseEvent, elem: DOMRect): boolean {
         if (
             evt.clientX < elem.left ||
             evt.clientX > elem.right ||
@@ -152,10 +154,10 @@ export class GenericMenuBar extends HTMLElement {
         return true;
     }
 
-    placeMenu( _sourceElem: HTMLElement, _menuElem: HTMLElement ) : void {
+    placeMenu(_sourceElem: HTMLElement, _menuElem: HTMLElement): void {
         var rect: DOMRect = _sourceElem.getBoundingClientRect();
         var menuDim: DOMRect = _menuElem.getBoundingClientRect();
-// console.log( "placeMenu", rect );
+        // console.log( "placeMenu", rect );
         // console.log(document.getElementById('menu-boxR'), document.getElementById('menu-boxR').style.visibility, rect.left);
 
         if (_menuElem.style.visibility == '' || _menuElem.style.visibility == 'hidden') {
@@ -174,42 +176,48 @@ export class GenericMenuBar extends HTMLElement {
         }
     }
 
-    clearMenu() : void {
+    clearMenu(): void {
+        if (this.shadowRoot == null) return;
         const myNode: HTMLUListElement = this.shadowRoot.getElementById("menu-box") as HTMLUListElement;
         // if( myNode == null ) return;
         myNode.textContent = '';
     }
 
-createMenuElement( _name: string ) : HTMLLIElement {
-    var li: HTMLLIElement = document.createElement("li");
-    var a: HTMLAnchorElement = document.createElement("a") as HTMLAnchorElement;
-    a.setAttribute('class', 'menu__item');
-    a.innerHTML = _name;
-    li.appendChild(a);
-    this.addMenuElement( li );
-    return li;
-}
-
-addMenuElement( _elem: HTMLLIElement ) : void {
-    this.shadowRoot.getElementById('menu-box').append(_elem);
-}
-
-openMenu( _elem: HTMLElement ) : void {
-    // if (this.isInElem(evt, _elem.getBoundingClientRect())) {
-        this.placeMenu(_elem, this.shadowRoot.getElementById('menu-box'));
-    // }
-}
-
-    addHeaderRightIcon( _elem: HTMLElement ) : void {
-        this.shadowRoot.getElementById('right-btn').prepend(_elem);
+    createMenuElement(_name: string): HTMLLIElement {
+        var li: HTMLLIElement = document.createElement("li");
+        var a: HTMLAnchorElement = document.createElement("a") as HTMLAnchorElement;
+        a.setAttribute('class', 'menu__item');
+        a.innerHTML = _name;
+        li.appendChild(a);
+        this.addMenuElement(li);
+        return li;
     }
 
-    addHeaderLeftIcon( _elem: HTMLElement ) : void {
-        this.shadowRoot.getElementById('left-btn').append(_elem);
+    addMenuElement(_elem: HTMLLIElement): void {
+        if (this.shadowRoot != null && this.shadowRoot.getElementById('menu-box') != null) {
+            this.shadowRoot.getElementById('menu-box') !.append(_elem);
+        }
+    }
+
+    openMenu(_elem: HTMLElement): void {
+        if (this.shadowRoot == null || this.shadowRoot.getElementById('menu-box') == null) return;
+        // if (this.isInElem(evt, _elem.getBoundingClientRect())) {
+        this.placeMenu(_elem, this.shadowRoot.getElementById('menu-box') !);
+        // 
+    }
+
+    addHeaderRightIcon(_elem: HTMLElement): void {
+        if (this.shadowRoot == null || this.shadowRoot.getElementById('right-btn') == null) return;
+        this.shadowRoot.getElementById('right-btn') !.prepend(_elem);
+    }
+
+    addHeaderLeftIcon(_elem: HTMLElement): void {
+        if (this.shadowRoot == null || this.shadowRoot.getElementById('left-btn') == null) return;
+        this.shadowRoot.getElementById('left-btn') !.append(_elem);
     }
 
 
-    createButton( id: string, iconPath: string ) : HTMLButtonElement {
+    createButton(id: string, iconPath: string): HTMLButtonElement {
         // var elem = document.createElement("button");
         var elem: HTMLButtonElement = document.createElement("button");
         // console.log( "url(\'" + iconPath + "\') center no-repeat" );

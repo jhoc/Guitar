@@ -58,17 +58,19 @@ class Instrument {
         //    console.log( "Instrument::this.pitch()", this.m_pitch );
         return this.m_pitch;
     }
-    pitchAt( i: number ) : Pitch {
+    pitchAt( i: number ) : Pitch | null {
         //      console.log( "Instrument::this.pitch(i)", this.m_pitch[i] );
+        if( this.m_pitch[i] == undefined ) return null;
         return this.m_pitch[i];
     }
     fretNum() : number {
         return this.m_fretNum;
     }
 
-    pitchFromCoord( _coord: FretboardCoord ): Pitch {
+    pitchFromCoord( _coord: FretboardCoord ): Pitch | null {
         // console.log( "PitchFromCoord", _coord, this.m_pitch[_coord[1]].index() + _coord[0], musicDefinition.pitch( this.m_pitch[_coord[1]].index() + _coord[0] ) );
-        return musicDefinition.pitch( this.m_pitch[_coord.saite].index() + _coord.fret );
+        if( this.m_pitch[_coord.saite] == undefined ) return null;
+        return musicDefinition.pitch( this.m_pitch[_coord.saite]!.index() + _coord.fret );
     }
 }
 export {
@@ -112,7 +114,7 @@ m_intervall : Intervall[] = [];
 
         let m_pitchNames: string[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
         for (let i: number = 0; i < 120; i++) {
-            this.m_pitch.push( new Pitch( m_pitchNames[i % 12], i % 12, Math.floor(i / 12), i ) );
+            this.m_pitch.push( new Pitch( m_pitchNames[i % 12]!, i % 12, Math.floor(i / 12), i ) );
             // _name: string, _pitch: number, _octave: number, _index: number 
         }
     }
@@ -132,29 +134,35 @@ m_intervall : Intervall[] = [];
         this.m_intervall.push(new Intervall('#7', 11));
     }
 
-    pitch( _i: number ) : Pitch {
+    pitch( _i: number ) : Pitch | null {
         //  console.log( this.m_pitch[_i] );
+        if( this.m_pitch[_i] == undefined ) return null;
         return this.m_pitch[_i];
     }
 
-    pitchFromNameAndOctave( _name: string , _octave: number ) : Pitch {
+    pitchFromNameAndOctave( _name: string , _octave: number ) : Pitch | null {
         for (let i = _octave * 12; i < (_octave + 1) * 12; i++) {
-            if (this.m_pitch[i].name() == _name) {
-                return this.m_pitch[i];
+            if( this.m_pitch[i] == undefined ) return null;
+            if (this.m_pitch[i]!.name() == _name) {
+                return this.m_pitch[i]!;
             }
         }
+        return null;
     }
 
-    getPitchFromJson( _json: any ) : Pitch {
+    getPitchFromJson( _json: any ) : Pitch | null {
         for (const key in _json) {
             // console.log("getInstr:" ,key, _json[key]);
             if (key == 'm_index') {
-                return this.m_pitch[_json[key]];
+                if( this.m_pitch[_json[key]] == undefined ) return null;
+                return this.m_pitch[_json[key]]!;
             }
         }
+        return null;
     }
 
-    intervall( _i: number ) : Intervall {
+    intervall( _i: number ) : Intervall | null {
+        if( this.m_intervall[_i] == undefined ) return null;
         return this.m_intervall[_i];
     }
 }
@@ -190,8 +198,9 @@ export class IntervallArray {
         return this.m_intervall;
     }
 
-    intervallAt(i) : Intervall {
-        return this.m_intervall[i];
+    intervallAt( _i: number ) : Intervall | null {
+        if( this.m_intervall[_i] == undefined ) return null;
+        return this.m_intervall[_i];
     }
 }
 
@@ -221,7 +230,8 @@ export class ChordFingering {
     fingering() : number[] {
         return this.m_fingering;
     }
-    fingeringAt(_i) : number {
+    fingeringAt(_i: number ) : number | null {
+        if( this.m_fingering[_i] == undefined ) return null;
         return this.m_fingering[_i];
     }
 }
@@ -248,10 +258,10 @@ class MusicData {
         // this.scaleIndex = 0;
         // this.m_pitch = [];
         for (let i: number = 0; i < 12; i++) {
-            this.m_pitch.push(musicDefinition.pitch(i));
+            this.m_pitch.push(musicDefinition.pitch(i)!);
         }
         // this.m_rootArray;
-        this.m_rootArray = new IntervallArray("Root", [musicDefinition.intervall(0)]);
+        this.m_rootArray = new IntervallArray("Root", [musicDefinition.intervall(0)!]);
 
         // this.m_chordFingering = [];
         // this.m_chordFingeringIndex = 0;
@@ -266,26 +276,29 @@ class MusicData {
         return this.m_pitch;
     }
 
-    pitchAt( _i: number ) : Pitch  {
+    pitchAt( _i: number ) : Pitch | null {
+        if( this.m_pitch[_i] == undefined ) return null;
         return this.m_pitch[_i];
     }
 
     instrument() : Instrument[] {
         return this.m_instrument;
     }
-    instrumentAt( _i: number ) : Instrument {
+    instrumentAt( _i: number ) : Instrument | null {
         //  console.log( "MusicData::instrument()", this.m_instrument[_i] );
+        if( this.m_instrument[_i] == undefined ) return null;
         return this.m_instrument[_i];
     }
     addInstrument( _instr: Instrument ) : void {
         this.m_instrument.push(_instr);
     }
-    instrumentFromName( _name: string ) : Instrument {
+    instrumentFromName( _name: string ) : Instrument | null {
         for (var i: number = 0; i < this.m_instrument.length; i++) {
-            if (_name == this.m_instrument[i].name()) {
-                return this.m_instrument[i];
+            if (_name == this.m_instrument[i]!.name()) {
+                return this.m_instrument[i]!;
             }
         }
+        return null;
     }
     getInstrumentFromJson( _json: any ) {
         for (const key in _json) {
@@ -295,74 +308,83 @@ class MusicData {
                 return this.instrumentFromName(_json[key]);
             }
         }
+        return this.m_instrument[0];
     }
 
     chord() : IntervallArray[] {
         return this.m_chord;
     }
-    chordAt( _i: number ) : IntervallArray {
+    chordAt( _i: number ) : IntervallArray | null {
+        if( this.m_chord[_i] == undefined ) return null;
         return this.m_chord[_i];
     }
-    chordFromName( _name: string ) : IntervallArray {
+    chordFromName( _name: string ) : IntervallArray | null {
         // console.log( "chordFromName", _name );
         for (var i: number = 0; i < this.m_chord.length; i++) {
             // console.log( "chordFromName check", this.m_chord[i].name() );
-            if (_name == this.m_chord[i].name()) {
-                return this.m_chord[i];
+            if (_name == this.m_chord[i]!.name()) {
+                return this.m_chord[i]!;
             }
         }
+        return null;
     }
     addChord( _chord: IntervallArray ) : void {
         _chord.setIndex( this.chordIndex++ );
         this.m_chord.push( _chord )
     }
-    getChordFromJson( _json: any ) : IntervallArray {
+    getChordFromJson( _json: any ) : IntervallArray | null {
         for (const key in _json) {
             // console.log("getInstr:" ,key, _json[key]);
             if (key == 'm_name') {
                 return this.chordFromName(_json[key]);
             }
         }
+        return null;
     }
 
     scale() : IntervallArray[] {
         return this.m_scale;
     }
-    scaleAt( _i: number ) : IntervallArray {
+    scaleAt( _i: number ) : IntervallArray | null {
+        if( this.m_scale[ _i ] == undefined ) return null;
         return this.m_scale[ _i ];
     }
-    scaleFromName( _name: string ) : IntervallArray {
+    scaleFromName( _name: string ) : IntervallArray | null{
         for (var i: number = 0; i < this.m_scale.length; i++) {
-            if (_name == this.m_scale[i].name()) {
-                return this.m_scale[i];
+            if (_name == this.m_scale[i]!.name()) {
+                return this.m_scale[i]!;
             }
         }
+        return null;
     }
     addScale( _scale: IntervallArray ) : void {
         _scale.setIndex(this.scaleIndex++);
         this.m_scale.push(_scale)
     }
-    getScaleFromJson( _json: any ) :IntervallArray {
+    getScaleFromJson( _json: any ) :IntervallArray | null {
         for (const key in _json) {
             // console.log("getInstr:" ,key, _json[key]);
             if (key == 'm_name') {
                 return this.scaleFromName(_json[key]);
             }
         }
+        return null;
     }
 
     chordFingering() : ChordFingering[] {
         return this.m_chordFingering;
     }
-    chordFingeringAt( _i: number ) : ChordFingering {
+    chordFingeringAt( _i: number ) : ChordFingering | null {
+        if( this.m_chordFingering[_i] == undefined ) return null;
         return this.m_chordFingering[_i];
     }
-    chordFingeringFromName( _name: string ) : ChordFingering {
+    chordFingeringFromName( _name: string ) : ChordFingering | null {
         for (var i = 0; i < this.m_chordFingering.length; i++) {
-            if (_name == this.m_chordFingering[i].name()) {
-                return this.m_chordFingering[i];
+            if (_name == this.m_chordFingering[i]!.name()) {
+                return this.m_chordFingering[i]!;
             }
         }
+        return null;
     }
     addChordFingering( _fing: ChordFingering ) : void {
         _fing.setIndex(this.m_chordFingeringIndex++);
@@ -380,7 +402,8 @@ class MusicData {
     scaleFingering() : string[] {
         return this.m_scaleFingering;
     }
-    scaleFingeringAt( _i: number ) : string {
+    scaleFingeringAt( _i: number ) : string | null {
+        if( this.m_scaleFingering[_i] == undefined ) return null;
         return this.m_scaleFingering[_i];
     }
     addscaleFingering( _fing: string ) : void {
@@ -393,102 +416,114 @@ class MusicData {
 
 let musicData: MusicData = new MusicData();
 let gPitches: Pitch[] = [];
-gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 5));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('B', 4));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('G', 4));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('D', 4));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('A', 3));
-gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 2));
+if( musicDefinition.pitchFromNameAndOctave('E', 5) != null ) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 5)!);
+}
+if( musicDefinition.pitchFromNameAndOctave('B', 4) != null ) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('B', 4)!);
+}
+if( musicDefinition.pitchFromNameAndOctave('G', 4) != null ) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('G', 4)!);
+}
+if( musicDefinition.pitchFromNameAndOctave('D', 4) != null ) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('D', 4)!);
+}
+if( musicDefinition.pitchFromNameAndOctave('B', 3) != null ) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('A', 3)!);
+}
+if( musicDefinition.pitchFromNameAndOctave('E', 2) != null ) {
+    gPitches.push(musicDefinition.pitchFromNameAndOctave('E', 2)!);
+}
 let guitarInstr: Instrument = new Instrument("Guitar", gPitches, 24);
 musicData.addInstrument(guitarInstr);
 
 let gitPitches: Intervall[] = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(2));
-gitPitches.push(musicDefinition.intervall(4));
-gitPitches.push(musicDefinition.intervall(5));
-gitPitches.push(musicDefinition.intervall(7));
-gitPitches.push(musicDefinition.intervall(9));
-gitPitches.push(musicDefinition.intervall(11));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(2)!);
+gitPitches.push(musicDefinition.intervall(4)!);
+gitPitches.push(musicDefinition.intervall(5)!);
+gitPitches.push(musicDefinition.intervall(7)!);
+gitPitches.push(musicDefinition.intervall(9)!);
+gitPitches.push(musicDefinition.intervall(11)!);
 // console.log( "add Ionian" );
 let scale = new IntervallArray("Ionian", gitPitches);
 musicData.addScale(scale);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(2));
-gitPitches.push(musicDefinition.intervall(3));
-gitPitches.push(musicDefinition.intervall(5));
-gitPitches.push(musicDefinition.intervall(7));
-gitPitches.push(musicDefinition.intervall(9));
-gitPitches.push(musicDefinition.intervall(10));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(2)!);
+gitPitches.push(musicDefinition.intervall(3)!);
+gitPitches.push(musicDefinition.intervall(5)!);
+gitPitches.push(musicDefinition.intervall(7)!);
+gitPitches.push(musicDefinition.intervall(9)!);
+gitPitches.push(musicDefinition.intervall(10)!);
 // console.log( "add Ionian" );
 scale = new IntervallArray("Dorian", gitPitches);
 musicData.addScale(scale);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(2));
-gitPitches.push(musicDefinition.intervall(4));
-gitPitches.push(musicDefinition.intervall(5));
-gitPitches.push(musicDefinition.intervall(7));
-gitPitches.push(musicDefinition.intervall(9));
-gitPitches.push(musicDefinition.intervall(10));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(2)!);
+gitPitches.push(musicDefinition.intervall(4)!);
+gitPitches.push(musicDefinition.intervall(5)!);
+gitPitches.push(musicDefinition.intervall(7)!);
+gitPitches.push(musicDefinition.intervall(9)!);
+gitPitches.push(musicDefinition.intervall(10)!);
 scale = new IntervallArray("Mixolydian", gitPitches);
 // console.log( "add aeoli" );
 musicData.addScale(scale);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(2));
-gitPitches.push(musicDefinition.intervall(3));
-gitPitches.push(musicDefinition.intervall(5));
-gitPitches.push(musicDefinition.intervall(6));
-gitPitches.push(musicDefinition.intervall(8));
-gitPitches.push(musicDefinition.intervall(10));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(2)!);
+gitPitches.push(musicDefinition.intervall(3)!);
+gitPitches.push(musicDefinition.intervall(5)!);
+gitPitches.push(musicDefinition.intervall(6)!);
+gitPitches.push(musicDefinition.intervall(8)!);
+gitPitches.push(musicDefinition.intervall(10)!);
 scale = new IntervallArray("Aeolian", gitPitches);
 // console.log( "add aeoli" );
 musicData.addScale(scale);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(4));
-gitPitches.push(musicDefinition.intervall(7));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(4)!);
+gitPitches.push(musicDefinition.intervall(7)!);
 let chord = new IntervallArray("Major", gitPitches);
 // console.log( "add aeoli" );
 musicData.addChord(chord);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(4));
-gitPitches.push(musicDefinition.intervall(7));
-gitPitches.push(musicDefinition.intervall(11));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(4)!);
+gitPitches.push(musicDefinition.intervall(7)!);
+gitPitches.push(musicDefinition.intervall(11)!);
 chord = new IntervallArray("Major 7", gitPitches);
 // console.log( "add aeoli" );
 musicData.addChord(chord);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(4));
-gitPitches.push(musicDefinition.intervall(7));
-gitPitches.push(musicDefinition.intervall(10));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(4)!);
+gitPitches.push(musicDefinition.intervall(7)!);
+gitPitches.push(musicDefinition.intervall(10)!);
 chord = new IntervallArray("Dom 7", gitPitches);
 // console.log( "add aeoli" );
 musicData.addChord(chord);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(3));
-gitPitches.push(musicDefinition.intervall(7));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(3)!);
+gitPitches.push(musicDefinition.intervall(7)!);
 chord = new IntervallArray("Minor", gitPitches);
 // console.log( "add aeoli" );
 musicData.addChord(chord);
 
 gitPitches = [];
-gitPitches.push(musicDefinition.intervall(0));
-gitPitches.push(musicDefinition.intervall(3));
-gitPitches.push(musicDefinition.intervall(7));
-gitPitches.push(musicDefinition.intervall(10));
+gitPitches.push(musicDefinition.intervall(0)!);
+gitPitches.push(musicDefinition.intervall(3)!);
+gitPitches.push(musicDefinition.intervall(7)!);
+gitPitches.push(musicDefinition.intervall(10)!);
 chord = new IntervallArray("Minor 7", gitPitches);
 // console.log( "add aeoli" );
 musicData.addChord(chord);

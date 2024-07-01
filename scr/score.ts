@@ -1,10 +1,13 @@
-import {
-    Diagram,
-} from "./Diagram.js";
+// import {
+//     Diagram,
+// } from "./Diagram.js";
 import {
     Data_Score,
     dataScore
 } from "./Data_Score.js";
+import {
+ Instrument
+} from "./MusicDefinitions.js"
 
 export enum StaffType {
     SHORT, TAB, NOTE
@@ -12,10 +15,10 @@ export enum StaffType {
 
 export class Score {
     canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
+    ctx: CanvasRenderingContext2D | null;
     m_dataScore: Data_Score;
     
-    constructor(_canvas, _instrument) {
+    constructor( _canvas: HTMLCanvasElement, _instrument: Instrument ) {
         this.canvas = _canvas;
         this.ctx = _canvas.getContext('2d');
 
@@ -23,6 +26,7 @@ export class Score {
     }
 
     update() : void {
+        if( this.ctx == null ) return;
         this.ctx.fillText( "SCORE", 100, 100 );
             
     }

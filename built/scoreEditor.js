@@ -1,4 +1,6 @@
-import { dataScore } from "./Data_Score.js";
+import { dataScore,
+// Staff_Type
+ } from "./Data_Score.js";
 import { Diagram } from "./Diagram.js";
 import { jTK_Fraction } from "./jUITK_Math_Fraction.js";
 import { MouseAction } from "./types.js";
@@ -18,20 +20,23 @@ export const Score_Parameters = {
 };
 export class ScoreEditor {
     constructor(_canvas, _instrument) {
+        this.ctx = null;
         this.scoreObjects = [];
         this.selectedObjects = [];
-        this.m_barRange = [];
+        this.m_barRange = { begin: 0, end: 13 };
         this.height = 0;
         this.width = 0;
+        this.onMouseInput = null;
         this.canvas = _canvas;
-        this.ctx = _canvas.getContext('2d');
+        if (_canvas.getContext('2d') != null) {
+            this.ctx = _canvas.getContext('2d');
+        }
         this.staffType = StaffType.SHORT;
         this.editArea = Edit_Area.STAFF;
         this.m_data = dataScore;
         this.instrument = _instrument;
         // this.scoreObjects = [];
         // this.selectedObjects = [];
-        this.m_barRange = [0, 3];
         // this.height = 0;
         // this.width = 0;
         this.updateDimension();
@@ -52,7 +57,9 @@ export class ScoreEditor {
     mouseDblClick(_evt) {
         var pos = this.getScorePosFromMouse(_evt.clientX, _evt.clientY);
         let mousePos = this.mousePos(_evt);
-        this.onMouseInput(mousePos, MouseAction.DBLCLICK, pos, this.editArea);
+        if (this.onMouseInput != null) {
+            this.onMouseInput(mousePos, MouseAction.DBLCLICK, pos, this.editArea);
+        }
     }
     mouseDown(_evt) {
         // let pos = this.getScorePosFromMouse( _evt.clientX, _evt.clientY );
@@ -74,7 +81,9 @@ export class ScoreEditor {
             }
         }
         var pos = this.getScorePosFromMouse(_evt.clientX, _evt.clientY);
-        this.onMouseInput(mousePos, MouseAction.CLICK, pos, this.editArea);
+        if (this.onMouseInput != null) {
+            this.onMouseInput(mousePos, MouseAction.CLICK, pos, this.editArea);
+        }
         this.update();
     }
     mouseUp(_evt) {
@@ -86,7 +95,9 @@ export class ScoreEditor {
         if (this.m_mouseIsPressed) {
             let mousePos = this.mousePos(_evt);
             var pos = this.getScorePosFromMouse(_evt.clientX, _evt.clientY);
-            this.onMouseInput(mousePos, MouseAction.DRAG, pos, this.editArea);
+            if (this.onMouseInput != null) {
+                this.onMouseInput(mousePos, MouseAction.DRAG, pos, this.editArea);
+            }
         }
     }
     getScorePosFromMouse(_x, _y) {
@@ -94,9 +105,9 @@ export class ScoreEditor {
         let x = _x - rect.left;
         // let y = _y - rect.top;
         x -= Score_Parameters.marginHor;
-        let bar = this.m_barRange[0];
+        let bar = this.m_barRange.begin;
         var w = 0;
-        for (let i = bar; i < this.m_barRange[1]; i++) {
+        for (let i = bar; i < this.m_barRange.end; i++) {
             w += this.barWidth(i);
             if (x < w) {
                 bar = i;
@@ -119,7 +130,7 @@ export class ScoreEditor {
     }
     updateDimension() {
         var width = 0;
-        for (var i = this.m_barRange[0]; i < this.m_barRange[1]; i++) {
+        for (var i = this.m_barRange.begin; i < this.m_barRange.end; i++) {
             // console.log( i, ": ", this.barWidth( i ) ,x );
             width += this.barWidth(i);
         }
@@ -167,6 +178,8 @@ export class ScoreEditor {
         return this.selectedObjects;
     }
     update() {
+        if (this.ctx == null)
+            return;
         // console.log( "scoreEditor.update/draw")
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawBars(Score_Parameters.marginHor, 0);
@@ -195,11 +208,13 @@ export class ScoreEditor {
         this.drawShortStaff(_x, _y);
     }
     drawShortStaff(_x, _y) {
+        if (this.ctx == null)
+            return;
         var x = _x;
         var widthSum = 0;
         var h = Score_Parameters.shortStaffBarMarkerH / 2;
         var w = 0;
-        for (var i = this.m_barRange[0]; i < this.m_barRange[1]; i++) {
+        for (var i = this.m_barRange.begin; i < this.m_barRange.end; i++) {
             // console.log( i, ": ", this.barWidth( i ) ,x );
             w = this.barWidth(i);
             // color marks

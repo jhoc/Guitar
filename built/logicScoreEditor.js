@@ -6,7 +6,7 @@ import { ScoreObject_Note } from "./scoreObjects.js";
 import { MouseAction } from "./types.js";
 ////////////////////////////////////////// Menubar
 //////////////////////////////////////vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-console.log("Create ScoreEditor MenuBar.............");
+// console.log( "Create ScoreEditor MenuBar............." );
 const menubar = document.getElementById('scoreEditorMenuBar') || null;
 var nav = menubar.createButton('navigation', "./images/mi--chevron-down.svg");
 menubar.addHeaderLeftIcon(nav);
@@ -94,6 +94,8 @@ dataScore.setCallbackChangeRemoveNote(onDataChangeRemoveNote);
 var noteOnPress = null;
 function pressOnMouse(_mousePos) {
     for (let i = 0; i < scoreEditor.getSelectedScoreObjects().length; i++) {
+        if (scoreEditor.getSelectedScoreObjects()[i] == undefined)
+            continue;
         if (scoreEditor.getSelectedScoreObjects()[i].handleMouse(_mousePos)) {
             return scoreEditor.getSelectedScoreObjects()[i];
         }
@@ -104,7 +106,7 @@ function onMouseInput(_mousePos, _type, _pos, _editMode) {
     // console.log("onMOuseIn", _mousePos, _type, _pos);
     if (_type == MouseAction.CLICK) {
         noteOnPress = pressOnMouse(_mousePos);
-        console.log("click", noteOnPress);
+        // console.log( "click", noteOnPress );
         return;
     }
     if (_type == MouseAction.DBLCLICK && _editMode == Edit_Area.STAFF) {
@@ -121,7 +123,9 @@ function onMouseInput(_mousePos, _type, _pos, _editMode) {
         // console.log("drag", note, _pos);
         if (noteOnPress != null) {
             //move getSelectedScoreObjects
-            noteOnPress.getData().setTime(_pos);
+            if (noteOnPress.getData() != null) {
+                noteOnPress.getData().setTime(_pos);
+            }
             noteOnPress.setTime(_pos);
             updateScoreObjectPos();
             return;

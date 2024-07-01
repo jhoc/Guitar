@@ -28,7 +28,7 @@ import { MouseAction, ScreenPos } from "./types.js";
 ////////////////////////////////////////// Menubar
 //////////////////////////////////////vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-console.log( "Create ScoreEditor MenuBar............." );
+// console.log( "Create ScoreEditor MenuBar............." );
 const menubar = document.getElementById('scoreEditorMenuBar') as GenericMenuBar || null;
 
 var nav: HTMLButtonElement = menubar.createButton('navigation', "./images/mi--chevron-down.svg");
@@ -73,7 +73,7 @@ element.addEventListener('click', function () {
 
 const canvasScoreEditor: HTMLCanvasElement = document.getElementById('scoreEditorCanvas') as HTMLCanvasElement;
 var scrollScoreEditor: HTMLDivElement = document.getElementById('scoreEditorScroll') as HTMLDivElement;
-const scoreEditor = new ScoreEditor(canvasScoreEditor, musicData.instrumentAt(0));
+const scoreEditor = new ScoreEditor(canvasScoreEditor, musicData.instrumentAt(0)!);
 scoreEditor.update();
 
 
@@ -133,11 +133,12 @@ function onDataChangeRemoveNote( _data: Data_Note ) {
 }
 dataScore.setCallbackChangeRemoveNote( onDataChangeRemoveNote );
 
-var noteOnPress: ScoreObject = null;
-function pressOnMouse( _mousePos: ScreenPos ) : ScoreObject {
+var noteOnPress: ScoreObject | null = null;
+function pressOnMouse( _mousePos: ScreenPos ) : ScoreObject | null {
     for (let i: number = 0; i < scoreEditor.getSelectedScoreObjects().length; i++) {
-        if( scoreEditor.getSelectedScoreObjects()[i].handleMouse( _mousePos ) ) {
-            return scoreEditor.getSelectedScoreObjects()[i];
+        if( scoreEditor.getSelectedScoreObjects()[i] == undefined ) continue;
+        if( scoreEditor.getSelectedScoreObjects()[i]!.handleMouse( _mousePos ) ) {
+            return scoreEditor.getSelectedScoreObjects()[i]!;
         }
     }
 
@@ -149,7 +150,7 @@ function onMouseInput( _mousePos: ScreenPos, _type: MouseAction, _pos: ScorePos,
 
     if( _type == MouseAction.CLICK ) {
         noteOnPress = pressOnMouse(_mousePos);
-        console.log( "click", noteOnPress );
+        // console.log( "click", noteOnPress );
         return;
     }
 
@@ -169,7 +170,10 @@ function onMouseInput( _mousePos: ScreenPos, _type: MouseAction, _pos: ScorePos,
         // console.log("drag", note, _pos);
         if (noteOnPress != null) {
             //move getSelectedScoreObjects
-            noteOnPress.getData().setTime( _pos )
+            if( noteOnPress.getData() != null ) {
+                noteOnPress.getData()!.setTime( _pos )
+            }
+            
             noteOnPress.setTime( _pos );
             updateScoreObjectPos();
             return;

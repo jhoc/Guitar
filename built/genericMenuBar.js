@@ -119,12 +119,16 @@ export class GenericMenuBar extends HTMLElement {
         this.attachShadow({
             mode: 'open'
         });
+        if (this.shadowRoot == null)
+            return;
         this.shadowRoot.appendChild(mtemplate.content.cloneNode(true));
         document.addEventListener("click", evt => {
             this.handleMouse(evt);
         }, true);
     }
     handleMouse(evt) {
+        if (this.shadowRoot == null)
+            return;
         // console.log("docClick", menus.length );
         var menu = this.shadowRoot.getElementById('menu-box');
         if (menu.style.visibility != 'hidden') {
@@ -164,6 +168,8 @@ export class GenericMenuBar extends HTMLElement {
         }
     }
     clearMenu() {
+        if (this.shadowRoot == null)
+            return;
         const myNode = this.shadowRoot.getElementById("menu-box");
         // if( myNode == null ) return;
         myNode.textContent = '';
@@ -178,17 +184,25 @@ export class GenericMenuBar extends HTMLElement {
         return li;
     }
     addMenuElement(_elem) {
-        this.shadowRoot.getElementById('menu-box').append(_elem);
+        if (this.shadowRoot != null && this.shadowRoot.getElementById('menu-box') != null) {
+            this.shadowRoot.getElementById('menu-box').append(_elem);
+        }
     }
     openMenu(_elem) {
+        if (this.shadowRoot == null || this.shadowRoot.getElementById('menu-box') == null)
+            return;
         // if (this.isInElem(evt, _elem.getBoundingClientRect())) {
         this.placeMenu(_elem, this.shadowRoot.getElementById('menu-box'));
-        // }
+        // 
     }
     addHeaderRightIcon(_elem) {
+        if (this.shadowRoot == null || this.shadowRoot.getElementById('right-btn') == null)
+            return;
         this.shadowRoot.getElementById('right-btn').prepend(_elem);
     }
     addHeaderLeftIcon(_elem) {
+        if (this.shadowRoot == null || this.shadowRoot.getElementById('left-btn') == null)
+            return;
         this.shadowRoot.getElementById('left-btn').append(_elem);
     }
     createButton(id, iconPath) {

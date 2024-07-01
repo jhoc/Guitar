@@ -15,15 +15,19 @@ deleteDiagramList.addEventListener('click', function () {
 });
 editDiagramList.addEventListener('click', function () {
     dialog.showModal();
+    if (diagramList.getSelectedDiagram() == undefined)
+        return;
     setEditorDiagram(diagramList.getSelectedDiagram());
     // setEditorMaxWidth( document.getElementById("dialog").clientWidth );
     adaptEditorSize(); //file logicDiagramEditor.js
 });
-document.getElementById("dialogCloseButton").addEventListener('click', function () {
-    diagramList.setSelectedDiagram(getEditorDiagram());
-    dialog.close();
-    diagramList.update();
-});
+if (document.getElementById("dialogCloseButton") != null) {
+    document.getElementById("dialogCloseButton").addEventListener('click', function () {
+        diagramList.setSelectedDiagram(getEditorDiagram());
+        dialog.close();
+        diagramList.update();
+    });
+}
 dialog.addEventListener("click", e => {
     const dialogDimensions = dialog.getBoundingClientRect();
     if (e.clientX < dialogDimensions.left ||

@@ -1,6 +1,7 @@
 import { Diagram } from "./Diagram.js";
 import {
-    musicData,
+    // musicData,
+    musicDefinition,
     Pitch
 } from "./MusicDefinitions.js";
 import {
@@ -9,7 +10,7 @@ import {
 
 export class ScorePos {
     bar: number = 0;
-    time: jTK_Fraction;
+    time: jTK_Fraction = new jTK_Fraction( 0, 4);
     repetition: number = 0;
 };
 
@@ -21,7 +22,7 @@ export const Staff_Type = Object.freeze({
 })
 
 export class Data_ScoreObject {
-    m_barAndTime: ScorePos;
+    m_barAndTime: ScorePos = new ScorePos;
     constructor(){
 
     }
@@ -36,8 +37,8 @@ export class Data_ScoreObject {
 
 export class Data_Note extends Data_ScoreObject {
   
-    m_duration: jTK_Fraction;
-    m_pitch: Pitch;
+    m_duration: jTK_Fraction = new jTK_Fraction( 0, 4);
+    m_pitch: Pitch = musicDefinition.pitch( 0 )!;
     constructor() {
   super();
     }
@@ -53,12 +54,12 @@ export class Data_Note extends Data_ScoreObject {
     setPitch(_pitch: Pitch) {
         this.m_pitch = _pitch;
     }
-    getPitch(_pitch) : Pitch {
+    getPitch() : Pitch {
         return this.m_pitch;
     }
 }
 
-interface onDataChangeType { ( _note: Data_Note ): void }
+interface onDataChangeType { ( _note: Data_Note ): void };
 
 export class Data_Score {
     m_diagram: Diagram[] = [];
@@ -66,11 +67,10 @@ export class Data_Score {
     m_symbol: any[] = [];
     m_metre: any[] = [];
     // onDataChangeAddNote : ( _note: Data_Note) => void;
-    onDataChangeAddNote : onDataChangeType;
-    onDataChangeRemoveNote : onDataChangeType;
+    onDataChangeAddNote : onDataChangeType | null = null;
+    onDataChangeRemoveNote : onDataChangeType | null = null;
 
     constructor() {
-       
     }
 
     getMetreForBar( _i: number ) : jTK_Fraction {
@@ -95,7 +95,9 @@ export class Data_Score {
         // console.log("pre sort", JSON.stringify(this.m_note));
         this.m_note.sort(this.sortByTime);
         // console.log("after sort", JSON.stringify(this.m_note));
-        this.onDataChangeAddNote(note);
+        if( this.onDataChangeAddNote != null ) {
+            this.onDataChangeAddNote(note);
+        }
         return note;
     }
 
@@ -104,7 +106,9 @@ export class Data_Score {
         for( let i = 0; i < this.m_note.length; i++ ) {
             // console.log( "DataScore.remove test", this.m_note[i] );
             if( _note == this.m_note[i] ) {
-                this.onDataChangeRemoveNote( this.m_note[i] );
+                if( this.onDataChangeRemoveNote != null ) {
+                this.onDataChangeRemoveNote( this.m_note[i]! );
+                }
                 this.m_note.splice( i, 1 );
             }
         }

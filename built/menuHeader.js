@@ -146,22 +146,28 @@ export class MenuHeader extends HTMLElement {
         this.attachShadow({
             mode: 'open'
         });
+        if (this.shadowRoot == null)
+            return;
         this.shadowRoot.appendChild(template.content.cloneNode(true));
         document.addEventListener("click", evt => {
             this.handleMouse(evt);
         }, false);
         var dialog = this.shadowRoot.getElementById("dialog") || null;
         var dialogFrame = this.shadowRoot.getElementById("dialogFrame") || null;
-        this.shadowRoot.getElementById("info").addEventListener('click', function () {
-            console.log("Info", dialog);
-            dialogFrame.src = "info.html";
-            dialog.showModal();
-        });
-        this.shadowRoot.getElementById("settings").addEventListener('click', function () {
-            console.log("Settings", dialog);
-            dialogFrame.src = "settings.html";
-            dialog.showModal();
-        });
+        if (this.shadowRoot.getElementById("info") != null) {
+            this.shadowRoot.getElementById("info").addEventListener('click', function () {
+                console.log("Info", dialog);
+                dialogFrame.src = "info.html";
+                dialog.showModal();
+            });
+        }
+        if (this.shadowRoot.getElementById("settings") != null) {
+            this.shadowRoot.getElementById("settings").addEventListener('click', function () {
+                console.log("Settings", dialog);
+                dialogFrame.src = "settings.html";
+                dialog.showModal();
+            });
+        }
         dialog.addEventListener("click", e => {
             const dialogDimensions = dialog.getBoundingClientRect();
             if (e.clientX < dialogDimensions.left ||
@@ -171,11 +177,15 @@ export class MenuHeader extends HTMLElement {
                 dialog.close();
             }
         });
-        this.shadowRoot.getElementById("dialogCloseButton").addEventListener('click', function () {
-            dialog.close();
-        });
+        if (this.shadowRoot.getElementById("dialogCloseButton") != null) {
+            this.shadowRoot.getElementById("dialogCloseButton").addEventListener('click', function () {
+                dialog.close();
+            });
+        }
     }
     handleMouse(evt) {
+        if (this.shadowRoot == null)
+            return;
         // console.log("docClick", menus.length );
         var menu = this.shadowRoot.getElementById('menu-box');
         if (menu.style.visibility != 'hidden') {
@@ -188,11 +198,15 @@ export class MenuHeader extends HTMLElement {
             menu.style.opacity = '0';
         }
         // console.log( evt.clientX, evt.clientY );
-        if (this.isInElem(evt, this.shadowRoot.getElementById('navigation-btn').getBoundingClientRect())) {
-            this.placeMenu(this.shadowRoot.getElementById('navigation-btn'), this.shadowRoot.getElementById('menu-box'));
+        if (this.shadowRoot.getElementById('navigation-btn') != null && this.shadowRoot.getElementById('menu-box') != null) {
+            if (this.isInElem(evt, this.shadowRoot.getElementById('navigation-btn').getBoundingClientRect())) {
+                this.placeMenu(this.shadowRoot.getElementById('navigation-btn'), this.shadowRoot.getElementById('menu-box'));
+            }
         }
-        if (this.isInElem(evt, this.shadowRoot.getElementById('burger-btn').getBoundingClientRect())) {
-            this.placeMenu(this.shadowRoot.getElementById('burger-btn'), this.shadowRoot.getElementById('menu-boxR'));
+        if (this.shadowRoot.getElementById('burger-btn') != null && this.shadowRoot.getElementById('menu-boxR') != null) {
+            if (this.isInElem(evt, this.shadowRoot.getElementById('burger-btn').getBoundingClientRect())) {
+                this.placeMenu(this.shadowRoot.getElementById('burger-btn'), this.shadowRoot.getElementById('menu-boxR'));
+            }
         }
     }
     isInElem(evt, elem) {
@@ -228,10 +242,14 @@ export class MenuHeader extends HTMLElement {
     addMenuEntry(_name, _function) {
     }
     addHeaderRightIcon(_elem) {
+        if (this.shadowRoot != null && this.shadowRoot.getElementById('right-btn') == null)
+            return;
         this.shadowRoot.getElementById('right-btn').prepend(_elem);
         this.menuButton.push(_elem);
     }
     addHeaderLeftIcon(_elem) {
+        if (this.shadowRoot != null && this.shadowRoot.getElementById('left-btn') == null)
+            return;
         this.shadowRoot.getElementById('left-btn').append(_elem);
         this.menuButton.push(_elem);
     }

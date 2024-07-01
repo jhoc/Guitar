@@ -13,11 +13,19 @@ template.innerHTML = `
 export class DiagramSelector extends HTMLElement {
     constructor() {
         super();
+        this.pitchSelect = null;
+        this.chordSelect = null;
+        this.scaleSelect = null;
+        this.callbackOnRootChange = null;
+        this.callbackOnChordChange = null;
+        this.callbackOnScaleChange = null;
     }
     connectedCallback() {
         this.attachShadow({
             mode: 'open'
         });
+        if (this.shadowRoot == null)
+            return;
         this.shadowRoot.appendChild(template.content.cloneNode(true));
         this.pitchSelect = this.shadowRoot.getElementById('pitchSelect');
         this.pitchSelect.addEventListener('change', this.onRootChange.bind(this), false);
@@ -33,7 +41,13 @@ export class DiagramSelector extends HTMLElement {
         this.callbackOnRootChange = _function;
     }
     onRootChange() {
+        if (this.pitchSelect == null)
+            return;
         const index = this.pitchSelect.selectedIndex;
+        if (this.callbackOnRootChange == null)
+            return;
+        if (musicData.pitchAt(index) == null)
+            return;
         this.callbackOnRootChange(musicData.pitchAt(index));
     }
     setCallbackOnChordChange(_function) {
@@ -41,7 +55,13 @@ export class DiagramSelector extends HTMLElement {
     }
     onChordChange() {
         // const index = this.chordSelect.selectedIndex - 1;
+        if (this.chordSelect == null)
+            return;
         const index = parseInt(this.chordSelect.value);
+        if (this.callbackOnChordChange == null)
+            return;
+        if (musicData.chordAt(index) == null)
+            return;
         this.callbackOnChordChange(musicData.chordAt(index));
         this.filterScaleContent(musicData.chordAt(index));
     }
@@ -51,12 +71,20 @@ export class DiagramSelector extends HTMLElement {
     onScaleChange() {
         // console.log("onScaleChange");
         // const index = this.scaleSelect.selectedIndex - 1;
+        if (this.scaleSelect == null)
+            return;
         const index = parseInt(this.scaleSelect.value);
+        if (this.callbackOnScaleChange == null)
+            return;
+        if (musicData.scaleAt(index) == null)
+            return;
         this.callbackOnScaleChange(musicData.scaleAt(index));
         this.filterChordContent(musicData.scaleAt(index));
     }
     fillPitchContent() {
         const elem = this.pitchSelect;
+        if (elem == null)
+            return;
         for (var i = 0; i < musicData.pitch().length; i++) {
             var opt = document.createElement("option");
             opt.setAttribute("value", i.toString());
@@ -66,6 +94,8 @@ export class DiagramSelector extends HTMLElement {
     }
     fillChordContent() {
         const elem = this.chordSelect;
+        if (elem == null)
+            return;
         var opt = document.createElement("option");
         opt.setAttribute("value", '-1');
         opt.innerHTML = "Chord";
@@ -79,6 +109,8 @@ export class DiagramSelector extends HTMLElement {
         }
     }
     filterChordContent(_scale) {
+        if (this.chordSelect == null)
+            return;
         var prevSelectedValue = parseInt(this.chordSelect.value);
         this.chordSelect.options.length = 0;
         if (_scale == undefined) {
@@ -102,6 +134,8 @@ export class DiagramSelector extends HTMLElement {
         elem.value = prevSelectedValue.toString();
     }
     fillScaleContent() {
+        if (this.scaleSelect == null)
+            return;
         const elem = this.scaleSelect;
         var opt = document.createElement("option");
         opt.setAttribute('value', '-1');
@@ -115,6 +149,9 @@ export class DiagramSelector extends HTMLElement {
         }
     }
     filterScaleContent(_chord) {
+        if (this.scaleSelect == null)
+            return;
+        ;
         var prevSelectedValue = parseInt(this.scaleSelect.value);
         this.scaleSelect.options.length = 0;
         if (_chord == undefined) {
@@ -138,23 +175,27 @@ export class DiagramSelector extends HTMLElement {
         this.scaleSelect.value = prevSelectedValue.toString();
     }
     setDiagram(_dia) {
-        console.log(_dia.getRoot(), _dia.getChord(), _dia.getScale());
+        // console.log( _dia.getRoot(), _dia.getChord(), _dia.getScale() );
         // this.pitchSelect[_dia.getRoot().index()].selected = true;
-        this.pitchSelect.value = _dia.getRoot().index().toString();
-        if (_dia.getChord() != undefined) {
+        if (this.pitchSelect != null)
+            this.pitchSelect.value = _dia.getRoot().index().toString();
+        if (_dia.getChord() != null) {
             // console.log( "setDia chird.idx", _dia.getChord().index() );
-            this.chordSelect.value = _dia.getChord().index().toString();
+            if (this.chordSelect != null && _dia.getChord() != null)
+                this.chordSelect.value = _dia.getChord().index().toString();
         }
         else {
             // this.chordSelect[0].selected = true;
-            this.chordSelect.value = '-1';
+            if (this.chordSelect != null)
+                this.chordSelect.value = '-1';
         }
-        if (_dia.getScale() != undefined) {
+        if (this.scaleSelect != null && _dia.getScale() != null) {
             this.scaleSelect.value = _dia.getScale().index().toString();
         }
         else {
             // this.scaleSelect[0].selected = true;
-            this.scaleSelect.value = '-1';
+            if (this.scaleSelect != null)
+                this.scaleSelect.value = '-1';
         }
     }
 }

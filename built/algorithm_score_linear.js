@@ -3,7 +3,9 @@ var objInBar = [];
 export function algo_lin_setXPos(_scoreObjects, _scoreParameters, _scoreEditor) {
     // console.log( "algo-> " );
     objInBar = [];
+    // objInBar.push([]);
     splitToBars(_scoreObjects, _scoreEditor);
+    // if( _scoreObjects == undefined ) return;
     // console.log("algo", JSON.stringify( objInBar ) );
     var yNote = _scoreParameters.staffYPos;
     // for (let i = 0; i < _scoreObjects.length; i++) {
@@ -12,6 +14,7 @@ export function algo_lin_setXPos(_scoreObjects, _scoreParameters, _scoreEditor) 
     // }
     var xBarOff = 0;
     xBarOff += _scoreParameters.marginHor;
+    console.log("algo", objInBar);
     for (var i = 0; i < objInBar.length; i++) {
         let scoreW = _scoreEditor.barWidth(i);
         for (let j = 0; j < objInBar[i].length; j++) {
@@ -24,14 +27,14 @@ export function algo_lin_setXPos(_scoreObjects, _scoreParameters, _scoreEditor) 
 }
 function splitToBars(_scoreObjects, _scoreEditor) {
     var bar = [];
-    var lastBar = _scoreEditor.getBarRange()[0];
+    var lastBar = _scoreEditor.getBarRange().begin;
     // console.log( "splitToBars obj ", _scoreEditor.getBarRange() );
     var barX = 0;
     var count = 0;
     for (var i = 0; i < _scoreObjects.length;) {
-        if (_scoreObjects[i].getTime().bar < _scoreEditor.getBarRange[0])
+        if (_scoreObjects[i].getTime().bar < _scoreEditor.getBarRange().begin)
             continue;
-        if (_scoreObjects[i].getTime().bar > _scoreEditor.getBarRange[1])
+        if (_scoreObjects[i].getTime().bar > _scoreEditor.getBarRange().end)
             return;
         if (count > 10) {
             console.log("Crashbug");

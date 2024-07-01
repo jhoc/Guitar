@@ -1,4 +1,8 @@
 import { Score_Parameters } from "./scoreEditor.js";
+import { jTK_Fraction } from "./jUITK_Math_Fraction.js";
+import { ScorePos,
+// Data_Score
+ } from "./Data_Score.js";
 export var ScoreObjectType;
 (function (ScoreObjectType) {
     ScoreObjectType[ScoreObjectType["SCOREOBJECT"] = 0] = "SCOREOBJECT";
@@ -7,9 +11,14 @@ export var ScoreObjectType;
 })(ScoreObjectType || (ScoreObjectType = {}));
 export class ScoreObject {
     constructor() {
+        this.ctx = null;
         this.m_x = 0;
         this.m_y = 0;
-        this.ctx;
+        this.m_data = null;
+        this.m_barAndTime = new ScorePos;
+        this.m_duration = new jTK_Fraction(0, 4);
+        this.m_isSelected = false;
+        // this.ctx;
         // this.m_x = 0;
         // this.m_y = 0;
         this.m_data;
@@ -78,6 +87,8 @@ export class ScoreObject_Note extends ScoreObject {
         return ScoreObjectType.NOTE;
     }
     draw() {
+        if (this.ctx == null)
+            return;
         this.ctx.fillStyle = "rgb(0 0 0 / 100%)";
         // this.ctx.strokeStyle = "rgb(0 255 255 / 100%)";
         // console.log( "scoreObj.draw ", this.m_x + _xOff, this.m_y + _yOff );

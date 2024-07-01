@@ -1,7 +1,11 @@
+import { 
+// musicData,
+musicDefinition } from "./MusicDefinitions.js";
 import { jTK_Fraction } from "./jUITK_Math_Fraction.js";
 export class ScorePos {
     constructor() {
         this.bar = 0;
+        this.time = new jTK_Fraction(0, 4);
         this.repetition = 0;
     }
 }
@@ -13,6 +17,7 @@ export const Staff_Type = Object.freeze({
 });
 export class Data_ScoreObject {
     constructor() {
+        this.m_barAndTime = new ScorePos;
     }
     setTime(_time) {
         this.m_barAndTime = _time;
@@ -24,6 +29,8 @@ export class Data_ScoreObject {
 export class Data_Note extends Data_ScoreObject {
     constructor() {
         super();
+        this.m_duration = new jTK_Fraction(0, 4);
+        this.m_pitch = musicDefinition.pitch(0);
     }
     setDuration(_dur) {
         this.m_duration = _dur;
@@ -34,16 +41,20 @@ export class Data_Note extends Data_ScoreObject {
     setPitch(_pitch) {
         this.m_pitch = _pitch;
     }
-    getPitch(_pitch) {
+    getPitch() {
         return this.m_pitch;
     }
 }
+;
 export class Data_Score {
     constructor() {
         this.m_diagram = [];
         this.m_note = [];
         this.m_symbol = [];
         this.m_metre = [];
+        // onDataChangeAddNote : ( _note: Data_Note) => void;
+        this.onDataChangeAddNote = null;
+        this.onDataChangeRemoveNote = null;
     }
     getMetreForBar(_i) {
         for (var i = 0; i < this.m_metre.length; i++) {
@@ -65,7 +76,9 @@ export class Data_Score {
         // console.log("pre sort", JSON.stringify(this.m_note));
         this.m_note.sort(this.sortByTime);
         // console.log("after sort", JSON.stringify(this.m_note));
-        this.onDataChangeAddNote(note);
+        if (this.onDataChangeAddNote != null) {
+            this.onDataChangeAddNote(note);
+        }
         return note;
     }
     removeNote(_note) {
@@ -73,7 +86,9 @@ export class Data_Score {
         for (let i = 0; i < this.m_note.length; i++) {
             // console.log( "DataScore.remove test", this.m_note[i] );
             if (_note == this.m_note[i]) {
-                this.onDataChangeRemoveNote(this.m_note[i]);
+                if (this.onDataChangeRemoveNote != null) {
+                    this.onDataChangeRemoveNote(this.m_note[i]);
+                }
                 this.m_note.splice(i, 1);
             }
         }

@@ -9,6 +9,7 @@ export class DiagramList {
         this.gapBtwDia = 0;
         this.gapBtwDiaMargin = 0;
         this.scrollLeftAmount = 0;
+        this.onSelectDiagramFunction = null;
         this.canvas = _canvas;
         this.ctx = _canvas.getContext('2d');
         // this.m_diagramList = [];
@@ -28,6 +29,8 @@ export class DiagramList {
     }
     loadLocalStorage() {
         var retrievedObject = localStorage.getItem('diagramList');
+        if (retrievedObject == null)
+            return false;
         retrievedObject = JSON.parse(retrievedObject);
         if (retrievedObject != null && retrievedObject.length != 0) {
             // this.m_diagramList = retrievedObject;
@@ -86,6 +89,8 @@ export class DiagramList {
         this.canvas.setAttribute("height", h + "px");
     }
     update() {
+        if (this.ctx == null)
+            return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.font = '16px Arial';
         this.ctx.fillStyle = "#000000";
@@ -108,13 +113,15 @@ export class DiagramList {
     }
     mouseDown(_evt) {
         var rect = this.canvas.getBoundingClientRect();
-        let x = _evt.clientX - rect.left;
+        // let x: number = _evt.clientX - rect.left;
         let y = _evt.clientY - rect.top;
         for (let i = 0; i < this.m_diagramList.length; i++) {
             if (y > this.m_diagramList[i].getYPos() - this.gapBtwDia && y < this.m_diagramList[i].getYPos()) {
                 // console.log( "DiaList.click on ", i );   
                 this.highlightRow = i;
-                this.onSelectDiagramFunction(this.m_diagramList[i]);
+                if (this.onSelectDiagramFunction != null) {
+                    this.onSelectDiagramFunction(this.m_diagramList[i]);
+                }
             }
         }
         this.update();
@@ -128,7 +135,9 @@ export class DiagramList {
                 // console.log( "DiaList.click on ", i );   
                 if (i != this.highlightRow) {
                     this.highlightRow = i;
-                    this.onSelectDiagramFunction(this.m_diagramList[i]);
+                    if (this.onSelectDiagramFunction != null) {
+                        this.onSelectDiagramFunction(this.m_diagramList[i]);
+                    }
                     this.update();
                     return;
                 }

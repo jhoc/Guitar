@@ -1,3 +1,6 @@
+// import {
+//     Diagram,
+// } from "./Diagram.js";
 import { dataScore } from "./Data_Score.js";
 export var StaffType;
 (function (StaffType) {
@@ -12,6 +15,8 @@ export class Score {
         this.m_dataScore = dataScore;
     }
     update() {
+        if (this.ctx == null)
+            return;
         this.ctx.fillText("SCORE", 100, 100);
     }
 }

@@ -17,3 +17,4 @@ export enum MouseAction {
 };
 
 export type Range = { begin: number, end: number };
+export type Rect = {x: number, y: number, w: number, h: number };
